@@ -1,0 +1,9 @@
+Flask>=3.0.0
+Flask-Cors>=4.0.0
+supabase>=2.10.0
+python-dotenv>=1.0.0
+gunicorn>=21.2.0
+Werkzeug>=3.0.0
+groq
+youtube-transcript-api
+holidays

@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ScholarPulse360 - Profile</title>
+    
+    <!-- FAVICON -->
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.png') }}" type="image/png">
+    <link rel="icon" href="{{ url_for('static', filename='favicon.png') }}" type="image/png">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: { 50: '#f0f3ff', 500: '#6366f1', 600: '#4f46e5', 700: '#4338ca' }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 min-h-screen transition-colors duration-300">
+
+    <!-- Top Navbar -->
+    <nav class="border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-800 px-6 py-4 flex justify-between items-center shadow-sm">
+        <a href="/" class="flex items-center gap-3 font-black text-2xl tracking-tight text-indigo-600 dark:text-indigo-400">
+            <img src="{{ url_for('static', filename='favicon.png') }}" 
+                 alt="ScholarPulse360 Logo" 
+                 class="w-10 h-10 md:w-12 md:h-12 object-contain rounded-xl shadow-sm"
+                 onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=SP360&background=6366f1&color=fff';">
+            <span class="text-xl md:text-2xl font-bold">ScholarPulse<span class="text-orange-500">360</span></span>
+        </a>
+        
+        <div class="flex items-center gap-4">
+            <a href="/" class="text-sm font-semibold hover:text-indigo-600 dark:hover:text-indigo-400 transition">Dashboard</a>
+            <button id="themeToggle" class="p-2.5 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:scale-105 transition">
+                <i id="themeIcon" class="fas fa-moon"></i>
+            </button>
+            <a href="/logout" class="px-4 py-2 text-sm font-semibold bg-red-500 hover:bg-red-600 text-white rounded-xl transition shadow">Logout</a>
+        </div>
+    </nav>
+
+    <!-- Main Content Container -->
+    <div class="max-w-5xl mx-auto p-6 space-y-6">
+
+        <!-- User Info Header Card -->
+        <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-6 shadow-sm flex flex-col md:flex-row items-center gap-6">
+            <div class="relative group">
+                <img id="avatarPreview" 
+                     src="{{ user.avatar_url if user.avatar_url else (user.avatar if user.avatar else 'https://ui-avatars.com/api/?name=' + (user.name if user.name else 'User') + '&background=6366f1&color=fff') }}" 
+                     alt="Profile Picture" 
+                     class="w-28 h-28 rounded-full object-cover border-4 border-indigo-500/20 shadow">
+                
+                <label for="avatarFileInput" class="absolute bottom-0 right-0 bg-indigo-600 hover:bg-indigo-700 text-white p-2.5 rounded-full cursor-pointer shadow-lg transition hover:scale-110">
+                    <i class="fas fa-camera text-xs"></i>
+                </label>
+                <input type="file" id="avatarFileInput" name="avatar" accept="image/*" class="hidden">
+            </div>
+
+            <div class="text-center md:text-left flex-1">
+                <div class="flex flex-wrap items-center justify-center md:justify-start gap-3">
+                    <h1 id="displayName" class="text-2xl font-bold text-gray-900 dark:text-white">{{ user.name if user.name else '' }}</h1>
+                    <span id="displayUsername" class="px-3 py-1 text-xs font-semibold bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 rounded-full">
+                        @{{ user.username if user.username else '' }}
+                    </span>
+                    <span id="displayStateTag" class="px-3 py-1 text-xs font-semibold bg-orange-100 dark:bg-orange-900/40 text-orange-600 dark:text-orange-300 rounded-full flex items-center gap-1">
+                        <i class="fas fa-location-dot text-[10px]"></i>
+                        <span id="stateNameText">{{ user.state if user.state else 'State Not Set' }}</span>
+                    </span>
+                    {% set completion = user.completion_rate if user.completion_rate is not none else (user.goals_completion_pct if user.goals_completion_pct is not none else (user.completion_pct if user.completion_pct is not none else 0)) %}
+                    {% set initial_aura = user.aura_tag if user.aura_tag else ('-999 Aura 😤' if completion < 50 else ('Chad 🗿' if completion < 80 else '+999 Aura 🗿🔥')) %}
+                    <span id="auraTagText" class="px-3 py-1 text-xs font-semibold bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-300 rounded-full">
+                        {{ initial_aura }}
+                    </span>
+                </div>
+                <p id="displayEmail" class="text-sm text-gray-500 dark:text-gray-400 mt-1">{{ user.email if user.email else '' }}</p>
+                <p id="displayBio" class="text-sm italic text-gray-600 dark:text-gray-300 mt-2">
+                    "{{ user.bio if user.bio else 'No bio added yet.' }}"
+                </p>
+            </div>
+        </div>
+
+        <!-- Real-Time Metrics Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- Active Day Streak -->
+            <div class="bg-white dark:bg-gray-800 p-5 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm flex items-center gap-4">
+                <div class="p-4 bg-orange-100 dark:bg-orange-900/30 text-orange-500 rounded-2xl">
+                    <i class="fas fa-fire text-2xl"></i>
+                </div>
+                <div>
+                    <span class="text-xs text-gray-500 dark:text-gray-400 font-medium">Active Streak</span>
+                    {% set streak_val = user.active_streak if user.active_streak is not none else (user.scholar_streak if user.scholar_streak is not none else (user.streak if user.streak is not none else 0)) %}
+                    <h3 id="displayStreak" class="text-xl font-bold text-gray-900 dark:text-white">{{ streak_val }} {{ 'Day' if streak_val == 1 else 'Days' }}</h3>
+                </div>
+            </div>
+
+            <!-- Scholar XP -->
+            <div class="bg-white dark:bg-gray-800 p-5 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm flex items-center gap-4">
+                <div class="p-4 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-500 rounded-2xl">
+                    <i class="fas fa-trophy text-2xl"></i>
+                </div>
+                <div>
+                    <span class="text-xs text-gray-500 dark:text-gray-400 font-medium">Scholar Points</span>
+                    {% set raw_xp = user.scholar_xp if user.scholar_xp is not none else (user.xp if user.xp is not none else 0) %}
+                    <h3 id="displayXP" class="text-xl font-bold text-gray-900 dark:text-white">{{ raw_xp }} XP</h3>
+                </div>
+            </div>
+
+            <!-- Scholar Rank -->
+            <div class="bg-white dark:bg-gray-800 p-5 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm flex items-center gap-4">
+                <div class="p-4 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-500 rounded-2xl">
+                    <i class="fas fa-medal text-2xl"></i>
+                </div>
+                <div>
+                    <span class="text-xs text-gray-500 dark:text-gray-400 font-medium">Scholar Rank</span>
+                    {% set initial_rank = user.scholar_rank if user.scholar_rank else (user.rank if user.rank else 'Beginner') %}
+                    <h3 id="displayRank" class="text-xl font-bold text-gray-900 dark:text-white">{{ initial_rank }}</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- Edit Profile Form -->
+        <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-6 shadow-sm">
+            <h2 class="text-lg font-bold mb-4 text-gray-900 dark:text-white flex items-center gap-2">
+                <i class="fas fa-user-edit text-indigo-500"></i> Edit Profile Details
+            </h2>
+
+            <div id="alertBox" class="hidden mb-4 p-3 rounded-xl text-sm font-medium"></div>
+
+            <form id="editProfileForm" class="space-y-6">
+                <!-- General Info -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Full Name</label>
+                        <input type="text" id="nameInput" name="name" value="{{ user.name if user.name else '' }}" required
+                               class="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Username</label>
+                        <input type="text" id="usernameInput" name="username" value="{{ user.username if user.username else '' }}" required
+                               class="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">State / Region</label>
+                        <select id="stateInput" name="state" required
+                                class="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
+                            <option value="" disabled {% if not user.state %}selected{% endif %}>Select state</option>
+                            {% for st in [
+                                'Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chhattisgarh', 
+                                'Delhi', 'Goa', 'Gujarat', 'Haryana', 'Himachal Pradesh', 'Jharkhand', 
+                                'Karnataka', 'Kerala', 'Madhya Pradesh', 'Maharashtra', 'Manipur', 
+                                'Meghalaya', 'Mizoram', 'Nagaland', 'Odisha', 'Punjab', 'Rajasthan', 
+                                'Sikkim', 'Tamil Nadu', 'Telangana', 'Tripura', 'Uttar Pradesh', 
+                                'Uttarakhand', 'West Bengal', 'Andaman and Nicobar Islands', 'Chandigarh', 
+                                'Dadra and Nagar Haveli and Daman and Diu', 'Jammu and Kashmir', 
+                                'Ladakh', 'Lakshadweep', 'Puducherry'
+                            ] %}
+                                <option value="{{ st }}" {% if user.state and user.state|string|trim|lower == st|trim|lower %}selected{% endif %}>{{ st }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Bio</label>
+                    <textarea id="bioInput" name="bio" rows="3" placeholder="Tell us about yourself..."
+                              class="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">{{ user.bio if user.bio else '' }}</textarea>
+                </div>
+
+                <!-- Personalized Water Intake Criteria Section -->
+                <div class="pt-4 border-t border-gray-200 dark:border-gray-700 space-y-4">
+                    <h3 class="text-md font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                        <i class="fas fa-droplet text-blue-500"></i> Personalized Water Intake Criteria
+                    </h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Weight</label>
+                            <div class="flex gap-2">
+                                <input type="number" step="0.1" min="1" id="weightInput" name="weight" 
+                                       value="{{ user.weight if user.weight is not none else '' }}" placeholder="e.g. 70"
+                                       class="w-2/3 px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
+                                <select id="weightUnitInput" name="weight_unit"
+                                        class="w-1/3 px-2 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
+                                    <option value="kg" {% if user.weight_unit == 'kg' or not user.weight_unit %}selected{% endif %}>kg</option>
+                                    <option value="lbs" {% if user.weight_unit == 'lbs' %}selected{% endif %}>lbs</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Activity Level</label>
+                            <select id="activityInput" name="activity_level"
+                                    class="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
+                                <option value="" disabled {% if not user.activity_level %}selected{% endif %}>Select activity level</option>
+                                <option value="Sedentary" {% if user.activity_level and user.activity_level|string|lower == 'sedentary' %}selected{% endif %}>Sedentary</option>
+                                <option value="Active" {% if user.activity_level and user.activity_level|string|lower == 'active' %}selected{% endif %}>Active</option>
+                                <option value="Athlete" {% if user.activity_level and user.activity_level|string|lower == 'athlete' %}selected{% endif %}>Athlete</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Local Climate</label>
+                            <select id="climateInput" name="climate"
+                                    class="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
+                                <option value="" disabled {% if not user.climate and not user.local_climate %}selected{% endif %}>Select climate</option>
+                                {% set user_climate = user.climate if user.climate else user.local_climate %}
+                                <option value="Hot/Dry" {% if user_climate and user_climate|string|lower == 'hot/dry' %}selected{% endif %}>Hot/Dry</option>
+                                <option value="Cool" {% if user_climate and user_climate|string|lower == 'cool' %}selected{% endif %}>Cool</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="waterTargetContainer" class="p-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/50 flex flex-col md:flex-row items-center justify-between gap-4">
+                        <div id="waterStatusText" class="text-xs font-medium text-amber-600 dark:text-amber-400 flex items-center gap-2">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <span>Water Intake Criteria Incomplete. Please provide Weight, Activity Level, and Local Climate.</span>
+                        </div>
+                        <div class="text-right flex items-center gap-2">
+                            <span class="text-xs font-medium text-gray-500 dark:text-gray-400">Daily Target:</span>
+                            {% set target_val = user.target_water or user.water_target or user.target_water_intake or '' %}
+                            <span id="displayWaterTarget" class="text-lg font-bold text-blue-600 dark:text-blue-400">
+                                {% if target_val %}
+                                    {% if 'L' in target_val|string %}
+                                        {{ target_val }}
+                                    {% else %}
+                                        {{ target_val }} L / day
+                                    {% endif %}
+                                {% else %}
+                                    -- L / day
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                    <input type="hidden" id="waterTargetInput" name="water_target" value="{{ target_val }}">
+                </div>
+
+                <div class="flex justify-end pt-2">
+                    <button type="submit" id="saveBtn" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-xl shadow-md transition flex items-center gap-2">
+                        <span>Save Changes</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+
+    <!-- SERVER USER DATA INJECTION -->
+    <script id="userData" type="application/json">
+    {% if user %}
+    {
+        "id": {{ (user.id if user.id is not none else (user.user_id if user.user_id is not none else (user.email if user.email else ('user_' + user.name if user.name else '')))) | tojson }},
+        "name": {{ (user.name if user.name else '') | tojson }},
+        "username": {{ (user.username if user.username else '') | tojson }},
+        "email": {{ (user.email if user.email else '') | tojson }},
+        "state": {{ (user.state if user.state else '') | tojson }},
+        "bio": {{ (user.bio if user.bio else '') | tojson }},
+        "weight": {{ (user.weight if user.weight is not none else '') | tojson }},
+        "weightUnit": {{ (user.weight_unit if user.weight_unit else 'kg') | tojson }},
+        "activityLevel": {{ (user.activity_level if user.activity_level else '') | tojson }},
+        "climate": {{ (user.climate if user.climate else (user.local_climate if user.local_climate else '')) | tojson }},
+        "targetWater": {{ (user.target_water or user.target_water_intake or user.water_target or '') | tojson }},
+        "xp": {{ (user.scholar_xp if user.scholar_xp is not none else (user.xp if user.xp is not none else 0)) | tojson }},
+        "rank": {{ (user.scholar_rank if user.scholar_rank else (user.rank if user.rank else 'Beginner')) | tojson }},
+        "streak": {{ (user.active_streak if user.active_streak is not none else (user.scholar_streak if user.scholar_streak is not none else (user.streak if user.streak is not none else 0))) | tojson }},
+        "goalsCompletionPct": {{ (user.completion_rate if user.completion_rate is not none else (user.goals_completion_pct if user.goals_completion_pct is not none else (user.completion_pct if user.completion_pct is not none else 0))) | tojson }},
+        "auraTag": {{ (user.aura_tag if user.aura_tag else '') | tojson }}
+    }
+    {% else %}
+    {}
+    {% endif %}
+    </script>
+
+    <!-- Client Scripts -->
+    <script>
+        let currentUserId = 'guest';
+        let serverUserData = {};
+
+        try {
+            const rawUser = document.getElementById('userData')?.textContent;
+            if (rawUser) {
+                serverUserData = JSON.parse(rawUser);
+                if (serverUserData && serverUserData.id) currentUserId = serverUserData.id;
+            }
+        } catch(e) {}
+
+        // Theme Toggle Functionality
+        const themeToggleBtn = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+
+        function applyTheme() {
+            if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+                if (themeIcon) themeIcon.className = 'fas fa-sun text-yellow-400';
+            } else {
+                document.documentElement.classList.remove('dark');
+                if (themeIcon) themeIcon.className = 'fas fa-moon text-gray-700';
+            }
+        }
+        applyTheme();
+
+        if (themeToggleBtn) {
+            themeToggleBtn.addEventListener('click', () => {
+                if (document.documentElement.classList.contains('dark')) {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.setItem('theme', 'light');
+                    if (themeIcon) themeIcon.className = 'fas fa-moon text-gray-700';
+                } else {
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('theme', 'dark');
+                    if (themeIcon) themeIcon.className = 'fas fa-sun text-yellow-400';
+                }
+            });
+        }
+
+        // Avatar Preview
+        const avatarFileInput = document.getElementById('avatarFileInput');
+        const avatarPreview = document.getElementById('avatarPreview');
+
+        if (avatarFileInput && avatarPreview) {
+            avatarFileInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        avatarPreview.src = event.target.result;
+                    }
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+
+        function parseXP(xp) {
+            let points = parseInt(xp, 10);
+            if (isNaN(points) || points < 0) points = 0;
+            return points;
+        }
+
+        function calculateScholarRank(xp) {
+            const points = parseXP(xp);
+            if (points >= 20000) return 'Master+';
+            if (points >= 12000) return 'Master';
+            if (points >= 7000) return 'Elite';
+            if (points >= 3500) return 'Pro+';
+            if (points >= 1500) return 'Pro';
+            if (points >= 500) return 'Intermediate';
+            return 'Beginner';
+        }
+
+        // REAL-TIME METRICS SYNC FROM LOCAL STORAGE (SAME AS DASHBOARD)
+        function syncLiveDashboardMetrics(userId) {
+            const uid = userId || currentUserId || 'guest';
+
+            // Tasks Completion
+            let tasks = [];
+            try {
+                const rawTasks = localStorage.getItem(`sp360_tasks_${uid}`);
+                if (rawTasks) tasks = JSON.parse(rawTasks);
+            } catch(e) {}
+
+            // Water Intake
+            let water = 0;
+            const rawWater = localStorage.getItem(`sp360_water_${uid}`);
+            if (rawWater && !isNaN(parseFloat(rawWater))) water = parseFloat(rawWater);
+
+            // Stored Profile Data
+            let storedProfile = {};
+            try {
+                const rawP = localStorage.getItem(`sp360_profile_${uid}`);
+                if (rawP) storedProfile = JSON.parse(rawP);
+            } catch(e) {}
+
+            const weight = storedProfile.weight || document.getElementById('weightInput')?.value || '';
+            const act = storedProfile.activity_level || document.getElementById('activityInput')?.value || '';
+            const clim = storedProfile.climate || document.getElementById('climateInput')?.value || '';
+            let targetWater = parseFloat(storedProfile.target_water || document.getElementById('waterTargetInput')?.value || 0);
+
+            if (!targetWater && weight && act && clim) {
+                let w = parseFloat(weight);
+                if (!isNaN(w) && w > 0) {
+                    targetWater = w * 0.035;
+                    if (String(act).toLowerCase().includes('athlete')) targetWater += 1.0;
+                    else if (String(act).toLowerCase().includes('active')) targetWater += 0.5;
+                    if (String(clim).toLowerCase().includes('hot')) targetWater += 0.5;
+                    targetWater = Math.max(1.5, Math.round(targetWater * 100) / 100);
+                }
+            }
+
+            let totalScore = 0;
+            let categories = 0;
+
+            if (Array.isArray(tasks) && tasks.length > 0) {
+                const completed = tasks.filter(t => t && t.done).length;
+                totalScore += (completed / tasks.length) * 100;
+                categories++;
+            }
+
+            if (targetWater > 0) {
+                const waterPct = Math.min(100, Math.max(0, (water / targetWater) * 100));
+                totalScore += waterPct;
+                categories++;
+            }
+
+            // XP Calculation
+            let liveGoalPct = 0;
+            if (categories > 0) {
+                liveGoalPct = Math.min(100, Math.max(0, Math.round(totalScore / categories)));
+            }
+            const liveXP = Math.round(liveGoalPct * 10);
+
+            // Streak sync
+            let liveStreak = localStorage.getItem(`sp360_streak_${uid}`);
+            if (liveStreak === null || isNaN(parseInt(liveStreak))) {
+                liveStreak = serverUserData.streak || 0;
+            } else {
+                liveStreak = parseInt(liveStreak);
+            }
+
+            const streakEl = document.getElementById('displayStreak');
+            if (streakEl) streakEl.innerText = liveStreak + (liveStreak === 1 ? ' Day' : ' Days');
+
+            // Final XP Display
+            const serverXp = parseXP(serverUserData.xp);
+            const finalXP = Math.max(serverXp, liveXP);
+
+            const xpEl = document.getElementById('displayXP');
+            if (xpEl) xpEl.innerText = finalXP.toLocaleString() + ' XP';
+
+            // Scholar Rank Display
+            const rankVal = calculateScholarRank(finalXP);
+            const rankEl = document.getElementById('displayRank');
+            if (rankEl) rankEl.innerText = rankVal;
+
+            // Aura Tag Sync
+            const auraTextEl = document.getElementById('auraTagText');
+            if (auraTextEl) {
+                if (liveGoalPct < 50) auraTextEl.innerText = '-999 Aura 😤';
+                else if (liveGoalPct < 80) auraTextEl.innerText = 'Chad 🗿';
+                else auraTextEl.innerText = '+999 Aura 🗿🔥';
+            }
+        }
+
+        const stateInputEl = document.getElementById('stateInput');
+        const stateNameTextEl = document.getElementById('stateNameText');
+
+        if (stateInputEl) {
+            stateInputEl.addEventListener('change', function() {
+                if (stateNameTextEl) {
+                    stateNameTextEl.innerText = this.value || 'State Not Set';
+                }
+            });
+        }
+
+        function calculateWaterTarget() {
+            const weightEl = document.getElementById('weightInput');
+            const weightUnitEl = document.getElementById('weightUnitInput');
+            const activityEl = document.getElementById('activityInput');
+            const climateEl = document.getElementById('climateInput');
+
+            const statusTextEl = document.getElementById('waterStatusText');
+            const displayTargetEl = document.getElementById('displayWaterTarget');
+            const targetInputEl = document.getElementById('waterTargetInput');
+
+            if (!weightEl || !displayTargetEl) return;
+
+            const weightVal = parseFloat(weightEl.value);
+            const weightUnit = weightUnitEl ? weightUnitEl.value : 'kg';
+            const activityVal = activityEl ? activityEl.value : '';
+            const climateVal = climateEl ? climateEl.value : '';
+
+            if (!weightVal || weightVal <= 0 || !activityVal || !climateVal) {
+                if (statusTextEl) {
+                    statusTextEl.className = 'text-xs font-medium text-amber-600 dark:text-amber-400 flex items-center gap-2';
+                    statusTextEl.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Water Intake Criteria Incomplete. Please provide Weight, Activity Level, and Local Climate.';
+                }
+                if (targetInputEl && targetInputEl.value) {
+                    const rawVal = targetInputEl.value;
+                    const parsedVal = parseFloat(rawVal);
+                    if (!isNaN(parsedVal) && parsedVal > 0) {
+                        let dispText = String(rawVal);
+                        if (!dispText.includes('L')) dispText += ' L / day';
+                        displayTargetEl.innerText = dispText;
+                        return;
+                    }
+                }
+                displayTargetEl.innerText = '-- L / day';
+                return;
+            }
+
+            const weightInKg = weightUnit === 'lbs' ? weightVal * 0.45359237 : weightVal;
+            let totalMl = weightInKg * 35;
+
+            if (activityVal === 'Active') {
+                totalMl += 500;
+            } else if (activityVal === 'Athlete') {
+                totalMl += 1000;
+            }
+
+            if (climateVal === 'Hot/Dry') {
+                totalMl += 500;
+            }
+
+            const liters = totalMl / 1000;
+            const targetLiters = Math.round(liters * 100) / 100;
+
+            if (statusTextEl) {
+                statusTextEl.className = 'text-xs font-medium text-emerald-600 dark:text-emerald-400 flex items-center gap-2';
+                statusTextEl.innerHTML = '<i class="fas fa-check-circle text-emerald-500"></i> Criteria Complete. Daily target calculated.';
+            }
+            displayTargetEl.innerText = targetLiters + ' L / day';
+            if (targetInputEl) {
+                targetInputEl.value = targetLiters;
+            }
+
+            syncLiveDashboardMetrics(currentUserId);
+        }
+
+        ['weightInput', 'weightUnitInput', 'activityInput', 'climateInput'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.addEventListener('input', calculateWaterTarget);
+                el.addEventListener('change', calculateWaterTarget);
+            }
+        });
+
+        function updateProfileUI(u) {
+            if (!u) return;
+
+            if (u.name) {
+                const nameEl = document.getElementById('displayName');
+                if (nameEl) nameEl.innerText = u.name;
+                const nameInput = document.getElementById('nameInput');
+                if (nameInput) nameInput.value = u.name;
+            }
+
+            if (u.username) {
+                const cleanUsername = String(u.username).replace(/^@/, '');
+                const unameEl = document.getElementById('displayUsername');
+                if (unameEl) unameEl.innerText = '@' + cleanUsername;
+                const unameInput = document.getElementById('usernameInput');
+                if (unameInput) unameInput.value = cleanUsername;
+            }
+
+            if (u.email) {
+                const emailEl = document.getElementById('displayEmail');
+                if (emailEl) emailEl.innerText = u.email;
+            }
+
+            const stateVal = u.state || u.region;
+            if (stateVal) {
+                const stateTextEl = document.getElementById('stateNameText');
+                if (stateTextEl) stateTextEl.innerText = stateVal;
+
+                const stateInputEl = document.getElementById('stateInput');
+                if (stateInputEl) {
+                    for (let i = 0; i < stateInputEl.options.length; i++) {
+                        if (stateInputEl.options[i].value.toLowerCase() === stateVal.toLowerCase()) {
+                            stateInputEl.selectedIndex = i;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (u.bio !== undefined && u.bio !== null) {
+                const bioEl = document.getElementById('displayBio');
+                if (bioEl) bioEl.innerText = '"' + (u.bio ? u.bio : 'No bio added yet.') + '"';
+                const bioInput = document.getElementById('bioInput');
+                if (bioInput) bioInput.value = u.bio;
+            }
+
+            const avatarUrl = u.avatar_url || u.avatar;
+            if (avatarUrl) {
+                const avatarEl = document.getElementById('avatarPreview');
+                if (avatarEl) avatarEl.src = avatarUrl;
+            }
+
+            if (u.weight) {
+                const weightInput = document.getElementById('weightInput');
+                if (weightInput) weightInput.value = u.weight;
+            }
+
+            if (u.weight_unit || u.weightUnit) {
+                const weightUnitInput = document.getElementById('weightUnitInput');
+                if (weightUnitInput) weightUnitInput.value = u.weight_unit || u.weightUnit;
+            }
+
+            if (u.activity_level || u.activityLevel) {
+                const actVal = u.activity_level || u.activityLevel;
+                const actInput = document.getElementById('activityInput');
+                if (actInput) {
+                    for (let i = 0; i < actInput.options.length; i++) {
+                        if (actInput.options[i].value.toLowerCase() === actVal.toLowerCase()) {
+                            actInput.selectedIndex = i;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (u.climate || u.local_climate) {
+                const climVal = u.climate || u.local_climate;
+                const climInput = document.getElementById('climateInput');
+                if (climInput) {
+                    for (let i = 0; i < climInput.options.length; i++) {
+                        if (climInput.options[i].value.toLowerCase() === climVal.toLowerCase()) {
+                            climInput.selectedIndex = i;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            calculateWaterTarget();
+            syncLiveDashboardMetrics(currentUserId);
+        }
+
+        // LISTEN TO REAL-TIME LOCALSTORAGE CHANGES FROM INDEX.HTML / OTHER TABS
+        window.addEventListener('storage', function(e) {
+            if (e.key && e.key.includes(currentUserId)) {
+                syncLiveDashboardMetrics(currentUserId);
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            calculateWaterTarget();
+
+            if (serverUserData && Object.keys(serverUserData).length > 0) {
+                updateProfileUI(serverUserData);
+            }
+
+            syncLiveDashboardMetrics(currentUserId);
+        });
+
+        // Submit Form
+        const editProfileForm = document.getElementById('editProfileForm');
+        const alertBox = document.getElementById('alertBox');
+        const saveBtn = document.getElementById('saveBtn');
+
+        if (editProfileForm) {
+            editProfileForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+
+                if (saveBtn) saveBtn.disabled = true;
+
+                const weightVal = document.getElementById('weightInput').value;
+                const weightUnitVal = document.getElementById('weightUnitInput').value;
+                const activityVal = document.getElementById('activityInput').value;
+                const climateVal = document.getElementById('climateInput').value;
+                const waterTargetVal = document.getElementById('waterTargetInput').value;
+
+                // Sync locally so index.html reads updated criteria immediately
+                const uid = currentUserId || 'guest';
+                const currentProfile = {
+                    weight: weightVal,
+                    weight_unit: weightUnitVal,
+                    activity_level: activityVal,
+                    climate: climateVal,
+                    target_water: waterTargetVal
+                };
+                localStorage.setItem(`sp360_profile_${uid}`, JSON.stringify(currentProfile));
+
+                const formData = new FormData();
+                formData.append('name', document.getElementById('nameInput').value);
+                formData.append('username', document.getElementById('usernameInput').value);
+                formData.append('state', document.getElementById('stateInput').value);
+                formData.append('bio', document.getElementById('bioInput').value);
+                formData.append('weight', weightVal);
+                formData.append('weight_unit', weightUnitVal);
+                formData.append('activity_level', activityVal);
+                formData.append('climate', climateVal);
+                formData.append('water_target', waterTargetVal);
+
+                if (avatarFileInput && avatarFileInput.files[0]) {
+                    formData.append('avatar', avatarFileInput.files[0]);
+                }
+
+                try {
+                    const response = await fetch('/api/profile/update', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok && (result.status === 'success' || result.success)) {
+                        alertBox.className = 'mb-4 p-3 rounded-xl text-sm font-medium bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300';
+                        alertBox.innerText = result.message || 'Profile updated successfully.';
+                        alertBox.classList.remove('hidden');
+
+                        if (result.user || result.data) {
+                            updateProfileUI(result.user || result.data);
+                        }
+                    } else {
+                        alertBox.className = 'mb-4 p-3 rounded-xl text-sm font-medium bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300';
+                        alertBox.innerText = result.message || result.error || 'Error updating profile.';
+                        alertBox.classList.remove('hidden');
+                    }
+                } catch (err) {
+                    alertBox.className = 'mb-4 p-3 rounded-xl text-sm font-medium bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300';
+                    alertBox.innerText = 'Server error occurred. Please try again.';
+                    alertBox.classList.remove('hidden');
+                } finally {
+                    if (saveBtn) saveBtn.disabled = false;
+                }
+            });
+        }
+    </script>
+</body>
+</html>

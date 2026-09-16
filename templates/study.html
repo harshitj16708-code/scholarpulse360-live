@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study Zone - ScholarPulse360</title>
+    
+    <!-- TAILWIND CSS & FONT AWESOME -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { darkMode: 'class' }
+    </script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <script>
+        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+
+    <style>
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 10px; }
+        .modal-active { animation: expandModal 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes expandModal {
+            0% { opacity: 0; transform: scale(0.92); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 min-h-screen flex flex-col justify-between font-sans transition-colors duration-300">
+
+    <!-- NAVBAR -->
+    <nav class="sticky top-0 z-40 border-b border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md px-6 py-4 flex justify-between items-center shadow-sm">
+        <a href="/" class="flex items-center gap-2 font-bold text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 transition">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+        <h1 class="font-black text-xl text-indigo-600 dark:text-indigo-400">Study Zone Workspace 📚</h1>
+        <div class="w-24"></div>
+    </nav>
+
+    <!-- MAIN DASHBOARD -->
+    <main class="max-w-7xl mx-auto px-6 py-8 space-y-8 flex-1 w-full">
+
+        <!-- SCRATCHPAD WIDGET -->
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-3xl border border-gray-200 dark:border-gray-700 shadow-sm transition-all duration-300">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold text-base text-indigo-600 dark:text-indigo-400 flex items-center gap-2">
+                    <i class="fas fa-sticky-note text-lg"></i> Quick Scratchpad
+                </h3>
+                <span id="scratchpadStatus" class="text-xs text-gray-400">Synced with Supabase</span>
+            </div>
+            <textarea id="scratchpadInput" placeholder="Jot down quick ideas, formulas, or reminders here..." rows="4" class="w-full p-4 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition resize-y"></textarea>
+        </div>
+
+        <div class="flex justify-between items-center">
+            <h2 class="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                <i class="fas fa-layer-group text-indigo-500"></i> Study Zone Portals
+            </h2>
+        </div>
+
+        <!-- 3 WIDGETS GRID -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+            <!-- WIDGET 1: YT Summarizer -->
+            <div onclick="openWidgetModal('ytModal')" class="bg-white dark:bg-gray-800 p-6 rounded-3xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-xl hover:border-emerald-500/50 cursor-pointer transition-all duration-300 flex flex-col justify-between group relative overflow-hidden">
+                <div class="absolute top-3 right-3 text-gray-400 dark:text-gray-500 group-hover:text-emerald-400 transition"><i class="fas fa-expand-alt text-sm"></i></div>
+                <div>
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="flex items-center gap-2 font-bold text-sm text-emerald-600 dark:text-emerald-400">
+                            <i class="fab fa-youtube text-lg"></i> YT Summarizer
+                        </span>
+                    </div>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 my-4">NoteGPT-style video breakdown with short/long options.</p>
+                </div>
+                <div class="mt-2 text-center text-xs font-semibold text-emerald-600 dark:text-emerald-400">Click to expand →</div>
+            </div>
+
+            <!-- WIDGET 2: Mark Ur Dates -->
+            <div onclick="openWidgetModal('calendarModal')" class="bg-white dark:bg-gray-800 p-6 rounded-3xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-xl hover:border-amber-500/50 cursor-pointer transition-all duration-300 flex flex-col justify-between group relative overflow-hidden">
+                <div class="absolute top-3 right-3 text-gray-400 dark:text-gray-500 group-hover:text-amber-400 transition"><i class="fas fa-expand-alt text-sm"></i></div>
+                <div>
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="flex items-center gap-2 font-bold text-sm text-amber-600 dark:text-amber-400">
+                            <i class="fas fa-calendar-alt text-lg"></i> Mark Ur Dates
+                        </span>
+                    </div>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 my-4">Interactive calendar for exam deadlines, notes, and holidays.</p>
+                </div>
+                <div class="mt-2 text-center text-xs font-semibold text-amber-600 dark:text-amber-400">Click to expand →</div>
+            </div>
+
+            <!-- WIDGET 3: ScholarPulse 360 AI -->
+            <div onclick="openWidgetModal('aiModal')" class="bg-white dark:bg-gray-800 p-6 rounded-3xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-xl hover:border-purple-500/50 cursor-pointer transition-all duration-300 flex flex-col justify-between group relative overflow-hidden">
+                <div class="absolute top-3 right-3 text-gray-400 dark:text-gray-500 group-hover:text-purple-400 transition"><i class="fas fa-expand-alt text-sm"></i></div>
+                <div>
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="flex items-center gap-2 font-bold text-sm text-purple-600 dark:text-purple-400">
+                            <i class="fas fa-robot text-lg"></i> ScholarPulse 360 AI
+                        </span>
+                    </div>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 my-4">Chat with your intelligent AI study tutor anytime.</p>
+                </div>
+                <div class="mt-2 text-center text-xs font-semibold text-purple-600 dark:text-purple-400">Click to expand →</div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- YT SUMMARIZER MODAL -->
+    <div id="ytModal" class="fixed inset-0 z-50 bg-black/50 dark:bg-black/75 backdrop-blur-md hidden items-center justify-center p-4 md:p-8">
+        <div class="bg-white dark:bg-gray-800 rounded-3xl w-[92vw] h-[88vh] max-w-none p-8 shadow-2xl border border-gray-200 dark:border-gray-700 relative flex flex-col justify-between modal-active">
+            <button onclick="closeWidgetModal('ytModal')" class="absolute top-6 right-6 w-12 h-12 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center text-gray-700 dark:text-white font-bold text-xl"><i class="fas fa-times"></i></button>
+            <div class="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 pb-4">
+                <span class="font-bold text-2xl text-emerald-600 dark:text-emerald-400 flex items-center gap-3"><i class="fab fa-youtube text-3xl"></i> YouTube Video Summarizer</span>
+                <button onclick="copyYtSummary()" id="copyYtBtn" class="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-xs font-bold rounded-xl mr-12 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
+                    <i class="fas fa-copy mr-1.5"></i> Copy Summary
+                </button>
+            </div>
+            <div class="my-6 space-y-4 flex-1 flex flex-col overflow-hidden">
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <input type="url" id="ytUrlInput" placeholder="Paste YouTube Video URL here..." class="flex-1 px-5 py-4 bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-2xl text-sm">
+                    <select id="ytSummaryType" class="px-5 py-4 bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-2xl text-sm">
+                        <option value="short">Short Summary ⚡</option>
+                        <option value="long">Long & Detailed 📜</option>
+                    </select>
+                    <button onclick="summarizeYouTube()" id="ytSubmitBtn" class="px-8 py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm rounded-2xl shadow-lg flex items-center justify-center gap-2">
+                        <span>Summarize</span>
+                    </button>
+                </div>
+                <div id="ytSpinner" class="hidden text-emerald-600 text-sm animate-pulse"><i class="fas fa-spinner fa-spin mr-2"></i> Generating video summary via AI...</div>
+                <div id="ytOutput" class="flex-1 overflow-y-auto p-6 rounded-2xl bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 text-sm whitespace-pre-line font-mono">Paste a YouTube link above...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MARK UR DATES MODAL -->
+    <div id="calendarModal" class="fixed inset-0 z-50 bg-black/50 dark:bg-black/75 backdrop-blur-md hidden items-center justify-center p-4 md:p-8">
+        <div class="bg-white dark:bg-gray-800 rounded-3xl w-[92vw] h-[88vh] max-w-none p-8 shadow-2xl border border-gray-200 dark:border-gray-700 relative flex flex-col justify-between modal-active">
+            <button onclick="closeWidgetModal('calendarModal')" class="absolute top-6 right-6 w-12 h-12 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center text-gray-700 dark:text-white font-bold text-xl"><i class="fas fa-times"></i></button>
+            <div class="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 pb-4">
+                <span class="font-bold text-2xl text-amber-600 dark:text-amber-400 flex items-center gap-3"><i class="fas fa-calendar-alt text-3xl"></i> Mark Ur Dates & Academic Calendar</span>
+            </div>
+            <div class="my-6 grid grid-cols-1 lg:grid-cols-3 gap-6 flex-1 overflow-y-auto">
+                <div class="lg:col-span-2 bg-gray-50 dark:bg-gray-900 p-6 rounded-3xl border border-gray-200 dark:border-gray-700 flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 id="currentMonthYear" class="font-bold text-lg">September 2026</h3>
+                            <div class="flex gap-2">
+                                <button onclick="changeMonth(-1)" class="px-3 py-1.5 bg-gray-200 dark:bg-gray-800 rounded-xl text-xs font-bold">Prev</button>
+                                <button onclick="changeMonth(1)" class="px-3 py-1.5 bg-gray-200 dark:bg-gray-800 rounded-xl text-xs font-bold">Next</button>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-7 gap-2 text-center text-xs font-bold text-gray-500 mb-2">
+                            <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+                        </div>
+                        <div id="calendarDaysGrid" class="grid grid-cols-7 gap-2"></div>
+                    </div>
+                </div>
+
+                <div class="bg-gray-50 dark:bg-gray-900 p-6 rounded-3xl border border-gray-200 dark:border-gray-700 space-y-4">
+                    <h3 class="font-bold text-base text-amber-600 dark:text-amber-400">Add Important Date</h3>
+                    <input type="date" id="eventDateInput" class="w-full px-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl text-sm">
+                    <input type="text" id="eventTitleInput" placeholder="Title..." class="w-full px-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl text-sm">
+                    <select id="eventTypeInput" class="w-full px-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl text-sm">
+                        <option value="exam">Exam / Deadline</option>
+                        <option value="holiday">Holiday</option>
+                    </select>
+                    <button onclick="saveEvent()" class="w-full py-3 bg-amber-600 text-white font-bold text-sm rounded-xl">Mark Date</button>
+                    <div id="eventsList" class="space-y-2 max-h-40 overflow-y-auto"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI TUTOR MODAL -->
+    <div id="aiModal" class="fixed inset-0 z-50 bg-black/50 dark:bg-black/75 backdrop-blur-md hidden items-center justify-center p-4 md:p-8">
+        <div class="bg-white dark:bg-gray-800 rounded-3xl w-[92vw] h-[88vh] max-w-none p-8 shadow-2xl border border-gray-200 dark:border-gray-700 relative flex flex-col justify-between modal-active">
+            <button onclick="closeWidgetModal('aiModal')" class="absolute top-6 right-6 w-12 h-12 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center text-gray-700 dark:text-white font-bold text-xl"><i class="fas fa-times"></i></button>
+            <div class="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 pb-4">
+                <span class="font-bold text-2xl text-purple-600 dark:text-purple-400 flex items-center gap-3"><i class="fas fa-robot text-3xl"></i> ScholarPulse 360 AI Study Assistant</span>
+                <button onclick="clearAIChat()" class="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-xs font-bold rounded-xl mr-12 text-purple-600 dark:text-purple-300 border border-purple-500/30">
+                    <i class="fas fa-trash-alt mr-1.5"></i> Clear Chat
+                </button>
+            </div>
+            <div class="my-6 flex-1 overflow-y-auto space-y-4 pr-2" id="chatMessages">
+                <div class="bg-gray-100 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 p-4 rounded-2xl max-w-[80%] text-sm">
+                    Hello! Main hoon <b>ScholarPulse 360 AI</b>. Ask me anything!
+                </div>
+            </div>
+            <div class="flex gap-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+                <input type="text" id="chatInput" placeholder="Ask AI..." onkeydown="if(event.key==='Enter') sendAIChat()" class="flex-1 px-5 py-3.5 bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-2xl text-sm">
+                <button onclick="sendAIChat()" id="aiSendBtn" class="px-8 py-3.5 bg-purple-600 hover:bg-purple-700 text-white font-bold text-sm rounded-2xl">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-800 py-4 text-center text-xs text-gray-500">
+        ScholarPulse360 Study Zone
+    </footer>
+
+    <!-- JS LOGIC ENGINE -->
+    <script>
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m]));
+        }
+
+        function openWidgetModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeWidgetModal(id) { document.getElementById(id).style.display = 'none'; }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') { 
+                ['ytModal', 'calendarModal', 'aiModal'].forEach(id => closeWidgetModal(id)); 
+            }
+        });
+
+        // ----------------------------------------------------
+        // 1. SCRATCHPAD REAL-TIME SUPABASE SYNC
+        // ----------------------------------------------------
+        const scratchpadInput = document.getElementById('scratchpadInput');
+        const scratchpadStatus = document.getElementById('scratchpadStatus');
+        let scratchpadTimer;
+
+        async function loadScratchpad() {
+            try {
+                const res = await fetch('/api/scratchpad');
+                const data = await res.json();
+                if (data.success) {
+                    scratchpadInput.value = data.content || '';
+                }
+            } catch(e) { console.error("Scratchpad fetch error", e); }
+        }
+
+        scratchpadInput.addEventListener('input', () => {
+            scratchpadStatus.innerText = 'Saving...';
+            clearTimeout(scratchpadTimer);
+            scratchpadTimer = setTimeout(async () => {
+                try {
+                    await fetch('/api/scratchpad', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ content: scratchpadInput.value })
+                    });
+                    scratchpadStatus.innerText = 'Saved to Supabase';
+                } catch(e) { scratchpadStatus.innerText = 'Error saving'; }
+            }, 800);
+        });
+        loadScratchpad();
+
+        // ----------------------------------------------------
+        // 2. YT SUMMARIZER & CALENDAR & AI LOGIC
+        // ----------------------------------------------------
+        async function summarizeYouTube() {
+            const url = document.getElementById('ytUrlInput').value.trim();
+            const type = document.getElementById('ytSummaryType').value;
+            const spinner = document.getElementById('ytSpinner');
+            const output = document.getElementById('ytOutput');
+            const submitBtn = document.getElementById('ytSubmitBtn');
+
+            if(!url) return alert('Please enter a valid YouTube URL');
+
+            spinner.classList.remove('hidden');
+            output.innerText = '';
+            submitBtn.disabled = true;
+
+            try {
+                const res = await fetch('/api/youtube-summary', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url, type })
+                });
+                const data = await res.json();
+                spinner.classList.add('hidden');
+                submitBtn.disabled = false;
+                if(data.success) output.innerText = data.summary;
+                else output.innerText = 'Error: ' + (data.error || 'Failed to summarize video.');
+            } catch(e) {
+                spinner.classList.add('hidden');
+                submitBtn.disabled = false;
+                output.innerText = 'Error connecting to backend API.';
+            }
+        }
+
+        function copyYtSummary() {
+            const text = document.getElementById('ytOutput').innerText;
+            if(!text || text.startsWith('Paste a YouTube')) return alert('Nothing to copy!');
+            navigator.clipboard.writeText(text);
+            alert('Copied summary to clipboard!');
+        }
+
+        // Calendar Logic
+        let currentDate = new Date();
+        let savedEvents = JSON.parse(localStorage.getItem('sp360_calendar_events')) || [];
+
+        function renderCalendar() {
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            const monthsNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            document.getElementById('currentMonthYear').innerText = `${monthsNames[month]} ${year}`;
+
+            const firstDayIndex = new Date(year, month, 1).getDay();
+            const totalDays = new Date(year, month + 1, 0).getDate();
+            const grid = document.getElementById('calendarDaysGrid');
+            grid.innerHTML = '';
+
+            for(let i=0; i<firstDayIndex; i++) grid.innerHTML += `<div class="h-20 bg-gray-200/40 rounded-xl opacity-20"></div>`;
+
+            for(let day=1; day<=totalDays; day++) {
+                const dateStr = `${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+                let badgeHtml = '';
+                savedEvents.filter(e => e.date === dateStr).forEach(ev => {
+                    const color = ev.type === 'exam' ? 'bg-red-500' : 'bg-emerald-500';
+                    badgeHtml += `<div class="text-[9px] text-white px-1 py-0.5 rounded ${color} truncate mt-0.5">${escapeHtml(ev.title)}</div>`;
+                });
+
+                grid.innerHTML += `
+                    <div class="h-20 bg-white dark:bg-gray-800 p-1.5 rounded-xl border border-gray-200 dark:border-gray-700/60 overflow-y-auto flex flex-col justify-between">
+                        <span class="text-xs font-bold">${day}</span>
+                        <div>${badgeHtml}</div>
+                    </div>
+                `;
+            }
+        }
+
+        function changeMonth(dir) { currentDate.setMonth(currentDate.getMonth() + dir); renderCalendar(); }
+        function saveEvent() {
+            const date = document.getElementById('eventDateInput').value;
+            const title = document.getElementById('eventTitleInput').value.trim();
+            const type = document.getElementById('eventTypeInput').value;
+            if(!date || !title) return alert('Enter date & title.');
+            savedEvents.push({ date, title, type });
+            localStorage.setItem('sp360_calendar_events', JSON.stringify(savedEvents));
+            renderCalendar();
+        }
+        renderCalendar();
+
+        // AI Chat Logic
+        async function sendAIChat() {
+            const input = document.getElementById('chatInput');
+            const msg = input.value.trim();
+            const chatBox = document.getElementById('chatMessages');
+            if(!msg) return;
+
+            chatBox.innerHTML += `<div class="bg-purple-600 text-white p-3.5 rounded-2xl ml-auto max-w-[80%] text-sm">${escapeHtml(msg)}</div>`;
+            input.value = '';
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            try {
+                const res = await fetch('/api/scholarpulse-ai', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: msg })
+                });
+                const data = await res.json();
+                chatBox.innerHTML += `<div class="bg-gray-100 dark:bg-gray-900 p-3.5 rounded-2xl max-w-[80%] text-sm">${escapeHtml(data.reply || 'No response')}</div>`;
+            } catch(e) {
+                chatBox.innerHTML += `<div class="bg-red-50 p-3.5 rounded-2xl max-w-[80%] text-red-600 text-sm">Error asking AI</div>`;
+            }
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function clearAIChat() {
+            document.getElementById('chatMessages').innerHTML = `<div class="bg-gray-100 dark:bg-gray-900 p-4 rounded-2xl text-sm">Hello! Ask me anything.</div>`;
+        }
+    </script>
+</body>
+</html>

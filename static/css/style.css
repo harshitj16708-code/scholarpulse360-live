@@ -1,0 +1,540 @@
+/* ==========================================
+   THEME VARIABLES (DARK & LIGHT MODE)
+   ========================================== */
+:root {
+    /* Dark Theme Default */
+    --bg-main: #0b0f19;
+    --bg-nav: #111827;
+    --bg-card: #161c2e;
+    --bg-input: #0f172a;
+    --bg-secondary-btn: #1e293b;
+    --border-nav: #1f293d;
+    --border-card: #232d48;
+    --border-input: #334155;
+    --text-primary: #ffffff;
+    --text-secondary: #94a3b8;
+    --text-muted: #cbd5e1;
+    --accent: #6366f1;
+    --accent-hover: #4f46e5;
+    --accent-light: #818cf8;
+    --shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+body.light-theme,
+html.light-theme {
+    /* Light Theme Overrides */
+    --bg-main: #f8fafc;
+    --bg-nav: #ffffff;
+    --bg-card: #ffffff;
+    --bg-input: #f1f5f9;
+    --bg-secondary-btn: #e2e8f0;
+    --border-nav: #e2e8f0;
+    --border-card: #cbd5e1;
+    --border-input: #cbd5e1;
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-muted: #334155;
+    --accent: #6366f1;
+    --accent-hover: #4f46e5;
+    --accent-light: #4f46e5;
+    --shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+}
+
+/* ==========================================
+   GLOBAL RESET & BASE STYLING
+   ========================================== */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* ==========================================
+   NAVBAR & LOGO STYLING
+   ========================================== */
+.navbar {
+    width: 100%;
+    background-color: var(--bg-nav);
+    border-bottom: 1px solid var(--border-nav);
+    padding: 12px 24px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.brand-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+}
+
+.navbar-logo {
+    height: 52px;
+    width: 52px;
+    object-fit: contain;
+}
+
+.brand-title {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.nav-menu {
+    display: flex;
+    gap: 20px;
+}
+
+.nav-item {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: color 0.2s ease;
+}
+
+.nav-item:hover, 
+.nav-item.active {
+    color: var(--accent);
+}
+
+.nav-icon {
+    font-size: 1.15rem;
+}
+
+.auth-buttons {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.btn-secondary {
+    padding: 8px 18px;
+    color: var(--text-primary);
+    text-decoration: none;
+    border-radius: 6px;
+    border: 1px solid var(--border-input);
+    font-size: 0.9rem;
+    font-weight: 500;
+    background-color: transparent;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 38px;
+    transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+    background-color: var(--bg-secondary-btn);
+}
+
+.btn-primary {
+    padding: 8px 18px;
+    background-color: var(--accent);
+    color: #ffffff;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 38px;
+    transition: background-color 0.2s ease;
+}
+
+.btn-primary:hover {
+    background-color: var(--accent-hover);
+}
+
+/* ==========================================
+   THEME TOGGLE BUTTON STYLING (FIXED SIZE)
+   ========================================== */
+.theme-toggle-btn {
+    background-color: var(--bg-input);
+    color: var(--text-primary);
+    border: 1px solid var(--border-input);
+    width: 42px;
+    height: 38px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: all 0.2s ease;
+    outline: none;
+    padding: 0;
+    flex-shrink: 0;
+}
+
+.theme-toggle-btn:hover {
+    background-color: var(--bg-secondary-btn);
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.auth-theme-wrapper {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 10;
+}
+
+/* ==========================================
+   MAIN CONTENT & HERO SECTION
+   ========================================== */
+.main-content {
+    max-width: 1200px;
+    width: 100%;
+    padding: 40px 20px;
+}
+
+.hero-section {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #1e1b4b;
+    border: 1px solid #4338ca;
+    color: #a5b4fc;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    margin-bottom: 20px;
+}
+
+body.light-theme .hero-badge {
+    background-color: #e0e7ff;
+    border-color: #c7d2fe;
+    color: #3730a3;
+}
+
+.hero-badge-icon {
+    font-size: 1rem;
+    color: #818cf8;
+}
+
+.hero-section h1 {
+    font-size: 3rem;
+    font-weight: 800;
+    margin-bottom: 16px;
+    color: var(--text-primary);
+}
+
+.text-gradient {
+    background: linear-gradient(135deg, #818cf8 0%, #c084fc 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.hero-description {
+    color: var(--text-secondary);
+    font-size: 1.15rem;
+    max-width: 650px;
+    margin: 0 auto 30px auto;
+    line-height: 1.6;
+}
+
+.cta-group {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+}
+
+.btn-hero-primary {
+    padding: 12px 24px;
+    background-color: var(--accent);
+    color: #ffffff;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: background-color 0.2s ease;
+}
+
+.btn-hero-primary:hover {
+    background-color: var(--accent-hover);
+}
+
+.btn-hero-secondary {
+    padding: 12px 24px;
+    background-color: var(--bg-secondary-btn);
+    color: var(--text-primary);
+    border: 1px solid var(--border-input);
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.2s ease;
+}
+
+.btn-hero-secondary:hover {
+    border-color: var(--accent);
+}
+
+/* ==========================================
+   FEATURE CARDS & LARGE ICONS
+   ========================================== */
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 24px;
+}
+
+.feature-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-card);
+    border-radius: 14px;
+    padding: 28px;
+    transition: transform 0.2s ease, border-color 0.2s ease, background-color 0.3s ease;
+    box-shadow: var(--shadow);
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--accent);
+}
+
+.card-icon-wrapper {
+    width: 65px;
+    height: 65px;
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.large-feature-icon {
+    font-size: 2.2rem;
+}
+
+.fitness-icon-bg { background-color: rgba(239, 68, 68, 0.15); color: #f87171; }
+.study-icon-bg { background-color: rgba(59, 130, 246, 0.15); color: #60a5fa; }
+.opportunity-icon-bg { background-color: rgba(234, 179, 8, 0.15); color: #facc15; }
+.profile-icon-bg { background-color: rgba(168, 85, 247, 0.15); color: #c084fc; }
+
+.feature-card h3 {
+    font-size: 1.25rem;
+    margin-bottom: 10px;
+    color: var(--text-primary);
+}
+
+.feature-card p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin-bottom: 20px;
+}
+
+.card-link {
+    color: var(--accent-light);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* ==========================================
+   AUTH / SIGNUP CARD STYLING
+   ========================================== */
+.auth-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-card);
+    border-radius: 16px;
+    padding: 35px 30px;
+    width: 100%;
+    max-width: 450px;
+    box-shadow: var(--shadow);
+    text-align: center;
+    margin: 40px auto;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.brand-logo-large {
+    height: 80px;
+    width: auto;
+    object-fit: contain;
+    margin-bottom: 10px;
+}
+
+.auth-card h2 {
+    font-size: 1.7rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+    color: var(--text-primary);
+}
+
+.subtitle {
+    color: var(--text-secondary);
+    font-size: 0.88rem;
+    margin-bottom: 25px;
+}
+
+.error-banner {
+    background-color: #451a22;
+    border: 1px solid #7f1d1d;
+    color: #fca5a5;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    margin-bottom: 18px;
+    text-align: left;
+}
+
+body.light-theme .error-banner {
+    background-color: #fef2f2;
+    border-color: #fca5a5;
+    color: #991b1b;
+}
+
+.input-group {
+    text-align: left;
+    margin-bottom: 18px;
+}
+
+.input-group label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+}
+
+.input-group input[type="text"],
+.input-group input[type="email"],
+.input-group input[type="password"],
+.input-group textarea {
+    width: 100%;
+    padding: 12px 14px;
+    background-color: var(--bg-input);
+    border: 1px solid var(--border-input);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.2s ease, background-color 0.3s ease;
+}
+
+.input-group textarea {
+    resize: vertical;
+}
+
+.input-group input:focus,
+.input-group textarea:focus {
+    border-color: var(--accent);
+}
+
+/* File Upload UI Box */
+.file-upload-box {
+    border: 2px dashed var(--border-input);
+    background-color: var(--bg-input);
+    border-radius: 8px;
+    padding: 16px;
+    text-align: center;
+    position: relative;
+    cursor: pointer;
+    transition: border-color 0.2s ease, background-color 0.3s ease;
+}
+
+.file-upload-box:hover {
+    border-color: var(--accent);
+}
+
+.upload-icon {
+    font-size: 1.8rem;
+    color: var(--accent-light);
+    margin-bottom: 6px;
+    display: block;
+}
+
+.file-upload-box input[type="file"] {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.file-hint {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    display: block;
+}
+
+.btn-submit {
+    width: 100%;
+    padding: 12px;
+    background-color: var(--accent);
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    transition: background-color 0.2s ease;
+}
+
+.btn-submit:hover {
+    background-color: var(--accent-hover);
+}
+
+.auth-footer-text {
+    margin-top: 20px;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.link-highlight {
+    color: var(--accent-light);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.link-highlight:hover {
+    text-decoration: underline;
+}

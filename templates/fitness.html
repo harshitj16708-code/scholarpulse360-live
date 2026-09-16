@@ -1,0 +1,1702 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fitness & Health Hub - ScholarPulse360</title>
+    
+    <!-- FAVICON -->
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.png') }}" type="image/x-icon">
+    
+    <!-- TAILWIND CSS & FONT AWESOME -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            900: '#312e81',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .dark ::-webkit-scrollbar-thumb { background: #475569; }
+        .modal-active { animation: expandModal 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes expandModal {
+            0% { opacity: 0; transform: scale(0.92); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 min-h-screen flex flex-col justify-between font-sans transition-colors duration-300">
+
+    <!-- TOP NAVIGATION BAR -->
+    <nav class="sticky top-0 z-40 border-b border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md px-4 sm:px-6 py-3.5 flex justify-between items-center shadow-sm">
+        <div class="flex items-center gap-4 sm:gap-6">
+            <a href="/" class="flex items-center gap-3 font-black text-2xl tracking-tight text-indigo-600 dark:text-indigo-400">
+                <img src="{{ url_for('static', filename='logo.png') }}" 
+                     alt="ScholarPulse360 Logo" 
+                     class="w-12 h-12 md:w-14 md:h-14 object-contain rounded-xl shadow-sm" 
+                     onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=SP360&background=6366f1&color=fff';">
+                <span class="text-2xl md:text-3xl font-bold">ScholarPulse<span class="text-orange-500">360</span></span>
+            </a>
+        </div>
+
+        <div class="flex items-center gap-4">
+            <!-- Theme Toggle -->
+            <button id="themeToggle" aria-label="Toggle Theme" class="p-2.5 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:scale-105 active:scale-95 transition cursor-pointer">
+                <i id="themeIcon" class="fas fa-moon"></i>
+            </button>
+
+            <!-- User Session -->
+            {% if user %}
+                <a href="/profile" class="flex items-center gap-3 p-1 pl-2.5 bg-gray-100 dark:bg-gray-700/80 rounded-xl hover:ring-2 hover:ring-indigo-500 transition">
+                    <span class="text-xs font-bold text-gray-700 dark:text-gray-200 hidden sm:inline">{{ user.name.split()[0] if user.name else 'User' }}</span>
+                    <img src="{{ user.avatar_url if user.avatar_url else 'https://ui-avatars.com/api/?name=' + (user.name if user.name else 'User') + '&background=6366f1&color=fff' }}" 
+                         alt="Avatar" class="w-8 h-8 rounded-lg object-cover shadow-sm">
+                </a>
+            {% else %}
+                <div class="flex items-center gap-2">
+                    <a href="/login" class="text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-indigo-600 transition px-2 py-1">Login</a>
+                    <a href="/signup" class="px-4 py-2 text-sm font-semibold bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-md transition">Sign Up</a>
+                </div>
+            {% endif %}
+        </div>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-8 flex-1 w-full">
+
+        <!-- HERO BANNER -->
+        <div class="relative overflow-hidden bg-gradient-to-r from-emerald-600 via-teal-600 to-indigo-700 rounded-3xl p-6 sm:p-8 text-white shadow-2xl border border-emerald-500/30">
+            <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-white/10 rounded-full blur-3xl pointer-events-none"></div>
+            
+            <div class="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                <div class="space-y-2 max-w-2xl">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 backdrop-blur-md text-xs font-semibold text-emerald-100 border border-white/20">
+                        <i class="fas fa-heartbeat text-rose-300"></i> Scholar Health & Vitality
+                    </div>
+                    <h1 class="text-3xl sm:text-4xl font-black tracking-tight">Fitness & Health Hub 🏃‍♂️</h1>
+                    <p class="text-emerald-100 text-sm leading-relaxed">Elevate your energy, monitor daily hydration, track workouts, and optimize your student diet with AI.</p>
+                </div>
+
+                <div class="flex flex-wrap gap-3">
+                    <a href="/" class="px-5 py-2.5 bg-white/15 hover:bg-white/25 backdrop-blur-md text-white font-bold text-xs rounded-xl border border-white/20 transition flex items-center gap-2">
+                        <i class="fas fa-arrow-left"></i> Main Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- TOP 4 FITNESS WIDGETS -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            
+            <!-- 1. GOAL COMPLETION -->
+            <div class="bg-white dark:bg-gray-800 p-6 sm:p-7 rounded-3xl border border-gray-200 dark:border-gray-700 shadow-md hover:shadow-xl transition-all duration-300 flex flex-col justify-between group">
+                <div>
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">Goal Completion</span>
+                        <div class="w-12 h-12 rounded-2xl bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xl font-bold group-hover:scale-110 transition duration-300">
+                            <i class="fas fa-bullseye"></i>
+                        </div>
+                    </div>
+                    <div id="widgetGoalCompletionVal" class="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white font-mono">0%</div>
+                    <div class="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-3 mt-4 overflow-hidden">
+                        <div id="widgetGoalBar" class="bg-emerald-500 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                </div>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-4 font-medium">Based on today's targets & water</p>
+            </div>
+
+            <!-- 2. ACTIVE STREAK -->
+            <div class="bg-white dark:bg-gray-800 p-6 sm:p-7 rounded-3xl border border-gray-200 dark:border-gray-700 shadow-md hover:shadow-xl transition-all duration-300 flex flex-col justify-between group">
+                <div>
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-xs font-bold uppercase tracking-wider text-orange-600 dark:text-orange-400">Active Streak</span>
+                        <div class="w-12 h-12 rounded-2xl bg-orange-100 dark:bg-orange-900/40 text-orange-600 dark:text-orange-400 flex items-center justify-center text-xl font-bold group-hover:scale-110 transition duration-300">
+                            <i class="fas fa-fire"></i>
+                        </div>
+                    </div>
+                    {% set streak_val = (user.active_streak if (user and user.active_streak is defined and user.active_streak is not none) else (user.scholar_streak if (user and user.scholar_streak is defined and user.scholar_streak is not none) else (user.streak if (user and user.streak is defined and user.streak is not none) else (streak if streak is defined and streak is not none else (active_streak if active_streak is defined and active_streak is not none else 0))))) %}
+                    <div id="widgetStreakVal" class="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white font-mono">{{ streak_val }} {{ 'Day' if streak_val == 1 else 'Days' }}</div>
+                </div>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-4 font-medium">Keep logging daily to build your streak</p>
+            </div>
+
+            <!-- 3. SCHOLAR XP -->
+            <div class="bg-white dark:bg-gray-800 p-6 sm:p-7 rounded-3xl border border-gray-200 dark:border-gray-700 shadow-md hover:shadow-xl transition-all duration-300 flex flex-col justify-between group">
+                <div>
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Scholar XP</span>
+                        <div class="w-12 h-12 rounded-2xl bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-xl font-bold group-hover:scale-110 transition duration-300">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                    </div>
+                    {% set xp_display = (user.scholar_xp if (user and user.scholar_xp is defined and user.scholar_xp is not none) else (user.xp if (user and user.xp is defined and user.xp is not none) else (scholar_xp if (scholar_xp is defined and scholar_xp is not none) else (xp if (xp is defined and xp is not none) else 0)))) %}
+                    <div id="widgetXpVal" class="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white font-mono">{{ xp_display }} XP</div>
+                </div>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-4 font-medium">Earn XP by completing targets & hydration</p>
+            </div>
+
+            <!-- 4. SCHOLAR RANK -->
+            <div class="bg-white dark:bg-gray-800 p-6 sm:p-7 rounded-3xl border border-gray-200 dark:border-gray-700 shadow-md hover:shadow-xl transition-all duration-300 flex flex-col justify-between group">
+                <div>
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-xs font-bold uppercase tracking-wider text-purple-600 dark:text-purple-400">Scholar Rank</span>
+                        <div class="w-12 h-12 rounded-2xl bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400 flex items-center justify-center text-xl font-bold group-hover:scale-110 transition duration-300">
+                            <i class="fas fa-crown"></i>
+                        </div>
+                    </div>
+                    {% set rank_display = (user.scholar_rank if (user and user.scholar_rank is defined and user.scholar_rank) else (user.rank if (user and user.rank is defined and user.rank) else (scholar_rank if (scholar_rank is defined and scholar_rank) else (rank if (rank is defined and rank) else 'Beginner')))) %}
+                    <div id="widgetRankVal" class="text-2xl sm:text-3xl font-black text-purple-600 dark:text-purple-400">{{ rank_display }}</div>
+                </div>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-4 font-medium">Rank based on overall Scholar XP</p>
+            </div>
+
+        </div>
+
+        <!-- WATER TRACKER -->
+        <div class="bg-white dark:bg-gray-800 rounded-3xl border border-gray-200 dark:border-gray-700 p-6 sm:p-8 shadow-sm hover:shadow-md transition">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-6 border-b border-gray-200 dark:border-gray-700">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 bg-cyan-100 dark:bg-cyan-900/40 text-cyan-600 dark:text-cyan-400 rounded-2xl flex items-center justify-center text-2xl">
+                        <i class="fas fa-glass-water"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-900 dark:text-white">Water Tracker</h3>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Hydration target calculated from your profile criteria</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="text-lg font-black text-cyan-600 dark:text-cyan-400 waterVal">0 / 0 L</span>
+                    <button onclick="handleWaterWidgetClick()" class="px-4 py-2 bg-cyan-50 dark:bg-cyan-900/40 text-cyan-600 dark:text-cyan-300 hover:bg-cyan-100 dark:hover:bg-cyan-900/60 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer">
+                        <i class="fas fa-expand-alt"></i> expand
+                    </button>
+                </div>
+            </div>
+
+            <div class="py-6 space-y-4">
+                <div class="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-5 overflow-hidden p-0.5 border border-cyan-500/20">
+                    <div class="waterBar bg-cyan-500 h-full rounded-full transition-all duration-500 shadow-sm" style="width: 0%"></div>
+                </div>
+
+              
+               
+            </div>
+        </div>
+
+        <!-- AI FITNESS CHAT & AI NUTRITION TRACKER GRID -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            
+            <!-- AI FITNESS CHAT WIDGET -->
+            <div class="bg-white dark:bg-gray-800 rounded-3xl border border-gray-200 dark:border-gray-700 p-6 sm:p-8 shadow-sm flex flex-col justify-between space-y-6">
+                <div class="flex items-center justify-between pb-4 border-b border-gray-200 dark:border-gray-700">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 rounded-xl flex items-center justify-center text-xl">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold text-gray-900 dark:text-white">AI Fitness Assistant</h3>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Ask questions regarding workouts, recovery, and training</p>
+                        </div>
+                    </div>
+                    <button onclick="openWidgetModal('aiChatModal')" class="p-2.5 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer" title="Expand Chat">
+                        <i class="fas fa-expand-alt"></i> Expand
+                    </button>
+                </div>
+
+                <!-- Inline Chat Area -->
+                <div id="inlineChatBox" class="bg-gray-50 dark:bg-gray-900/60 rounded-2xl p-4 h-64 overflow-y-auto space-y-3 text-xs md:text-sm border border-gray-200/60 dark:border-gray-700">
+                    <div class="flex items-start gap-2.5">
+                        <div class="w-7 h-7 rounded-lg bg-indigo-600 text-white flex items-center justify-center text-xs font-bold flex-shrink-0">AI</div>
+                        <div class="bg-white dark:bg-gray-800 p-3 rounded-2xl rounded-tl-none border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100 font-medium shadow-sm max-w-[85%]">
+                            Hello! I am your AI Fitness Assistant. Ask me anything about workout routines, strength training, cardio, or student recovery guidelines.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat Input Form -->
+                <form onsubmit="handleInlineChatSubmit(event)" class="flex gap-2">
+                    <input type="text" id="inlineChatInput" placeholder="Ask a fitness question..." class="flex-1 px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/80 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-800 dark:text-gray-100">
+                    <button type="submit" id="inlineSendBtn" class="px-5 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm rounded-xl transition shadow-md flex items-center gap-2 cursor-pointer">
+                        <span>Send</span>
+                        <i class="fas fa-paper-plane text-xs"></i>
+                    </button>
+                </form>
+            </div>
+
+            <!-- AI NUTRITION & DIET TRACKER WIDGET -->
+            <div class="bg-white dark:bg-gray-800 rounded-3xl border border-gray-200 dark:border-gray-700 p-6 sm:p-8 shadow-sm space-y-6 flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between pb-4 border-b border-gray-200 dark:border-gray-700">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 rounded-xl flex items-center justify-center text-xl">
+                                <i class="fas fa-utensils"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-bold text-gray-900 dark:text-white">AI Nutrition Tracker</h3>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">Log meals eaten and calculate real energy scores</p>
+                            </div>
+                        </div>
+                        <input type="date" id="dietDatePicker" onchange="loadDietForSelectedDate()" class="px-3 py-1.5 text-xs font-semibold rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer">
+                    </div>
+
+                    <div class="space-y-4 pt-4">
+                        <div>
+                            <label for="dietInput" class="block text-xs font-bold text-gray-600 dark:text-gray-300 mb-1.5">What food items did you eat today?</label>
+                            <textarea id="dietInput" rows="3" placeholder="e.g. 2 chapatis, 1 bowl dal, 100g paneer, 1 glass milk" class="w-full p-3.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/80 text-xs md:text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 text-gray-800 dark:text-gray-100 resize-none"></textarea>
+                        </div>
+
+                        <div class="flex gap-3">
+                            <button onclick="analyzeDiet()" id="analyzeDietBtn" class="flex-1 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm rounded-xl transition shadow-md flex items-center justify-center gap-2 cursor-pointer">
+                                <i class="fas fa-chart-pie"></i> Analyze Food Entry
+                            </button>
+                            <button onclick="saveDietRecord()" id="saveDietBtn" class="px-4 py-3 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-bold text-xs sm:text-sm rounded-xl transition cursor-pointer flex items-center gap-1.5">
+                                <i class="fas fa-save"></i> Save Record
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nutrition Analysis Results Container -->
+                <div id="dietAnalysisResult" class="bg-gray-50 dark:bg-gray-900/60 rounded-2xl p-4 border border-gray-200/60 dark:border-gray-700 hidden space-y-3">
+                    <div class="flex items-center justify-between pb-2 border-b border-gray-200 dark:border-gray-700">
+                        <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider flex items-center gap-1">
+                            <i class="fas fa-leaf"></i> Nutritional Breakdown
+                        </span>
+                        <div class="text-xs font-extrabold text-gray-700 dark:text-gray-200">
+                            Energy Score: <span id="dietEnergyScore" class="text-emerald-600 dark:text-emerald-400 font-black">--/100</span>
+                        </div>
+                    </div>
+
+                    <p id="dietScoreExplanation" class="text-xs text-gray-700 dark:text-gray-200 font-medium"></p>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 text-center">
+                        <div class="p-2 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
+                            <span class="text-[10px] text-gray-400 uppercase font-bold block">Calories</span>
+                            <span id="dietCalories" class="text-sm font-black text-gray-800 dark:text-gray-100">0 kcal</span>
+                        </div>
+                        <div class="p-2 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
+                            <span class="text-[10px] text-gray-400 uppercase font-bold block">Protein</span>
+                            <span id="dietProtein" class="text-sm font-black text-gray-800 dark:text-gray-100">0 g</span>
+                        </div>
+                        <div class="p-2 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
+                            <span class="text-[10px] text-gray-400 uppercase font-bold block">Carbs</span>
+                            <span id="dietCarbs" class="text-sm font-black text-gray-800 dark:text-gray-100">0 g</span>
+                        </div>
+                        <div class="p-2 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
+                            <span class="text-[10px] text-gray-400 uppercase font-bold block">Fats</span>
+                            <span id="dietFats" class="text-sm font-black text-gray-800 dark:text-gray-100">0 g</span>
+                        </div>
+                    </div>
+
+                    <div id="dietDetailsExtra" class="text-xs text-gray-600 dark:text-gray-300 pt-1 leading-relaxed border-t border-gray-200 dark:border-gray-700"></div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- SCRATCH PAD WIDGET -->
+        <div class="bg-white dark:bg-gray-800 rounded-3xl border border-gray-200 dark:border-gray-700 p-6 sm:p-8 shadow-sm hover:shadow-md transition">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-6 border-b border-gray-200 dark:border-gray-700">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400 rounded-2xl flex items-center justify-center text-2xl">
+                        <i class="fas fa-note-sticky"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-900 dark:text-white">Scratch Pad</h3>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Quick notes, reminders & workout ideas — synced to your account</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span id="scratchpadStatus" class="text-xs font-semibold text-gray-400 dark:text-gray-500">Loading...</span>
+                    <button onclick="openScratchpadModal()" class="px-4 py-2 bg-amber-50 dark:bg-amber-900/40 text-amber-600 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/60 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer">
+                        <i class="fas fa-expand-alt"></i> Expand
+                    </button>
+                </div>
+            </div>
+
+            <div class="py-6">
+                <textarea id="inlineScratchpadInput" oninput="handleScratchpadInput('inlineScratchpadInput')" rows="5" placeholder="Type a quick note..." class="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/80 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 text-gray-800 dark:text-gray-100 resize-none"></textarea>
+                <div class="flex justify-end pt-3">
+                    <button onclick="saveScratchpad('inlineScratchpadInput')" id="inlineScratchpadSaveBtn" class="px-5 py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs rounded-xl transition shadow-md flex items-center gap-2 cursor-pointer">
+                        <i class="fas fa-save"></i> Save Note
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- GENERATORS SECTION: STUDENT DIET CHART & EXERCISE CHART GENERATORS -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            
+            <!-- 1. STUDENT DIET CHART GENERATOR -->
+            <div class="bg-white dark:bg-gray-800 rounded-3xl border border-gray-200 dark:border-gray-700 p-6 sm:p-8 shadow-sm space-y-6 flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center gap-3 pb-4 border-b border-gray-200 dark:border-gray-700">
+                        <div class="w-10 h-10 bg-teal-100 dark:bg-teal-900/40 text-teal-600 dark:text-teal-400 rounded-xl flex items-center justify-center text-xl">
+                            <i class="fas fa-apple-whole"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold text-gray-900 dark:text-white">Student Diet Chart Generator</h3>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Budget-friendly & hostel-mess adaptable meals</p>
+                        </div>
+                    </div>
+
+                    <form onsubmit="generateStudentDietChart(event)" class="space-y-4 pt-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-600 dark:text-gray-300 mb-1">Fitness Goal</label>
+                                <select id="dietGoal" class="w-full p-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-xs focus:ring-2 focus:ring-teal-500 font-semibold text-gray-800 dark:text-gray-200">
+                                    <option value="Fat Loss & Active Energy">Fat Loss & Active Energy</option>
+                                    <option value="Muscle Building">Muscle Gain & Power</option>
+                                    <option value="Maintain Focus & Health">Brain Focus & Stamina</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-600 dark:text-gray-300 mb-1">Diet Preference</label>
+                                <select id="dietType" class="w-full p-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-xs focus:ring-2 focus:ring-teal-500 font-semibold text-gray-800 dark:text-gray-200">
+                                    <option value="Vegetarian (Hostel friendly)">Vegetarian (Hostel / Mess)</option>
+                                    <option value="Eggetarian">Eggetarian</option>
+                                    <option value="Non-Vegetarian">Non-Vegetarian</option>
+                                    <option value="Budget Vegan">Vegan / High Fiber</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-600 dark:text-gray-300 mb-1">Daily Food Budget / Access</label>
+                            <select id="dietBudget" class="w-full p-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-xs focus:ring-2 focus:ring-teal-500 font-semibold text-gray-800 dark:text-gray-200">
+                                <option value="Pocket Friendly (College Canteen + Mess)">Student Budget (Mess + Canteen)</option>
+                                <option value="Standard Home Prepared">Standard Home Cooked</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" id="generateDietBtn" class="w-full py-3 bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs sm:text-sm rounded-xl transition shadow-md flex items-center justify-center gap-2 cursor-pointer">
+                            <i class="fas fa-wand-magic-sparkles"></i> Generate Student Diet Chart
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Output Area -->
+                <div id="dietChartOutput" class="hidden mt-4 bg-gray-50 dark:bg-gray-900/70 p-4 rounded-2xl border border-teal-500/30 space-y-3">
+                    <div class="flex items-center justify-between pb-2 border-b border-gray-200 dark:border-gray-700">
+                        <span class="text-xs font-bold text-teal-600 dark:text-teal-400 uppercase tracking-wide">Custom Student Diet Plan</span>
+                        <button onclick="copyGeneratedPlan('dietChartContent', this)" class="text-xs bg-teal-600 text-white px-3 py-1 rounded-lg font-bold hover:bg-teal-700 transition flex items-center gap-1.5"><i class="fas fa-copy"></i> Copy Plan</button>
+                    </div>
+                    <div id="dietChartContent" class="text-xs sm:text-sm text-gray-800 dark:text-gray-200 space-y-2 leading-relaxed"></div>
+                </div>
+            </div>
+
+            <!-- 2. STUDENT EXERCISE CHART GENERATOR -->
+            <div class="bg-white dark:bg-gray-800 rounded-3xl border border-gray-200 dark:border-gray-700 p-6 sm:p-8 shadow-sm space-y-6 flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center gap-3 pb-4 border-b border-gray-200 dark:border-gray-700">
+                        <div class="w-10 h-10 bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 rounded-xl flex items-center justify-center text-xl">
+                            <i class="fas fa-dumbbell"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold text-gray-900 dark:text-white">Student Exercise Generator</h3>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Quick routines fitting tight study schedules</p>
+                        </div>
+                    </div>
+
+                    <form onsubmit="generateStudentWorkoutChart(event)" class="space-y-4 pt-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-600 dark:text-gray-300 mb-1">Workout Location</label>
+                                <select id="workoutLocation" class="w-full p-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-xs focus:ring-2 focus:ring-indigo-500 font-semibold text-gray-800 dark:text-gray-200">
+                                    <option value="Hostel Room / No Equipment">Hostel Room (No Equipment)</option>
+                                    <option value="Local Gym / College Gym">College / Local Gym</option>
+                                    <option value="Outdoor Park">Outdoor Park & Running</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-600 dark:text-gray-300 mb-1">Time Available</label>
+                                <select id="workoutTime" class="w-full p-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-xs focus:ring-2 focus:ring-indigo-500 font-semibold text-gray-800 dark:text-gray-200">
+                                    <option value="15-20 Mins (Study Break Quick Workout)">15-20 Mins (Study Break Quick)</option>
+                                    <option value="30-40 Mins (Standard Session)">30-40 Mins (Standard Workout)</option>
+                                    <option value="60 Mins Full Session">60 Mins Full Session</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-600 dark:text-gray-300 mb-1">Target Area</label>
+                            <select id="workoutTarget" class="w-full p-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-xs focus:ring-2 focus:ring-indigo-500 font-semibold text-gray-800 dark:text-gray-200">
+                                <option value="Full Body Conditioning & Energy">Full Body & Fat Loss</option>
+                                <option value="Postural Correction & Neck/Back Stretch">Study Posture & Back Relief</option>
+                                <option value="Strength & Muscle Gain">Strength & Hypertrophy</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" id="generateWorkoutBtn" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs sm:text-sm rounded-xl transition shadow-md flex items-center justify-center gap-2 cursor-pointer">
+                            <i class="fas fa-running"></i> Generate Workout Routine
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Output Area -->
+                <div id="workoutChartOutput" class="hidden mt-4 bg-gray-50 dark:bg-gray-900/70 p-4 rounded-2xl border border-indigo-500/30 space-y-3">
+                    <div class="flex items-center justify-between pb-2 border-b border-gray-200 dark:border-gray-700">
+                        <span class="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wide">Custom Workout Plan</span>
+                        <button onclick="copyGeneratedPlan('workoutChartContent', this)" class="text-xs bg-indigo-600 text-white px-3 py-1 rounded-lg font-bold hover:bg-indigo-700 transition flex items-center gap-1.5"><i class="fas fa-copy"></i> Copy Plan</button>
+                    </div>
+                    <div id="workoutChartContent" class="text-xs sm:text-sm text-gray-800 dark:text-gray-200 space-y-2 leading-relaxed"></div>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- MODALS -->
+
+    <!-- WATER MODAL -->
+    <div id="waterModal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-md hidden items-center justify-center p-4 md:p-8">
+        <div class="bg-white dark:bg-gray-800 rounded-3xl w-[92vw] h-[88vh] max-w-none p-8 md:p-12 shadow-2xl border border-gray-200 dark:border-gray-700 relative flex flex-col justify-between modal-active">
+            <button onclick="closeWidgetModal('waterModal')" class="absolute top-6 right-6 w-12 h-12 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 rounded-full flex items-center justify-center text-gray-600 dark:text-gray-200 font-bold text-xl transition"><i class="fas fa-times"></i></button>
+            <div class="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 pb-4">
+                <span class="font-bold text-2xl text-cyan-600 dark:text-cyan-400 flex items-center gap-3"><i class="fas fa-glass-water text-3xl"></i> Hydration & Water Engine</span>
+            </div>
+            <div class="text-center my-auto space-y-10 max-w-4xl mx-auto w-full">
+                <div class="text-6xl md:text-8xl font-black text-cyan-600 dark:text-cyan-400 waterVal">0 / 0 L</div>
+                <div class="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-8 overflow-hidden p-1 border border-cyan-500/20">
+                    <div class="waterBar bg-cyan-500 h-full rounded-full transition-all duration-500 shadow-md" style="width: 0%"></div>
+                </div>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-2xl mx-auto pt-4 waterButtonGroup">
+                    <button onclick="addWater(100)" class="py-4 bg-cyan-50 dark:bg-cyan-900/40 text-cyan-600 dark:text-cyan-300 font-bold text-lg rounded-2xl hover:bg-cyan-100 transition border border-cyan-200 dark:border-cyan-800 cursor-pointer waterAddBtn">+100 ml</button>
+                    <button onclick="addWater(250)" class="py-4 bg-cyan-100 dark:bg-cyan-900/60 text-cyan-700 dark:text-cyan-200 font-bold text-lg rounded-2xl hover:bg-cyan-200 transition border border-cyan-200 dark:border-cyan-800 cursor-pointer waterAddBtn">+250 ml</button>
+                    <button onclick="addWater(500)" class="py-4 bg-cyan-600 hover:bg-cyan-700 text-white font-bold text-lg rounded-2xl transition shadow-md cursor-pointer waterAddBtn">+500 ml</button>
+                    <button onclick="addWater(1000)" class="py-4 bg-cyan-700 hover:bg-cyan-800 text-white font-bold text-lg rounded-2xl transition shadow-xl cursor-pointer waterAddBtn">+1000 ml</button>
+                </div>
+            </div>
+            <div class="text-center text-xs text-gray-400">Maintain daily target calculated from your profile to earn XP</div>
+        </div>
+    </div>
+
+    <!-- WATER CRITERIA REQUIRED MODAL -->
+    <div id="waterCriteriaModal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-md hidden items-center justify-center p-4 md:p-8">
+        <div class="bg-white dark:bg-gray-800 rounded-3xl w-full max-w-lg p-6 sm:p-8 shadow-2xl border border-gray-200 dark:border-gray-700 relative text-center space-y-6 modal-active">
+            <button onclick="closeWidgetModal('waterCriteriaModal')" class="absolute top-4 right-4 w-10 h-10 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-full flex items-center justify-center text-gray-600 dark:text-gray-200 font-bold transition"><i class="fas fa-times"></i></button>
+            <div class="w-16 h-16 bg-cyan-100 dark:bg-cyan-900/40 text-cyan-600 dark:text-cyan-400 rounded-2xl flex items-center justify-center text-3xl mx-auto shadow-sm">
+                <i class="fas fa-glass-water-droplet"></i>
+            </div>
+            <div class="space-y-2">
+                <h3 class="text-xl font-bold text-gray-900 dark:text-white">Water Intake Criteria Required</h3>
+                <p class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+                    Please complete your Water Intake Criteria in your Profile first to calculate your personalized daily water target.
+                </p>
+            </div>
+            <div class="flex justify-center gap-3 pt-2">
+                <button onclick="closeWidgetModal('waterCriteriaModal')" class="px-5 py-2.5 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 text-sm font-bold rounded-xl transition">Cancel</button>
+                <a href="/profile" class="px-6 py-2.5 bg-cyan-600 hover:bg-cyan-700 text-white text-sm font-bold rounded-xl shadow-lg transition flex items-center gap-2">
+                    <i class="fas fa-user-edit"></i> Go to Profile
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- EXPANDABLE AI CHAT WORKSPACE MODAL -->
+    <div id="aiChatModal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-md hidden items-center justify-center p-4 md:p-8">
+        <div class="bg-white dark:bg-gray-800 rounded-3xl w-[92vw] h-[88vh] max-w-none p-6 md:p-10 shadow-2xl border border-gray-200 dark:border-gray-700 relative flex flex-col justify-between modal-active">
+            <button onclick="closeWidgetModal('aiChatModal')" class="absolute top-6 right-6 w-12 h-12 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 rounded-full flex items-center justify-center text-gray-600 dark:text-gray-200 font-bold text-xl transition"><i class="fas fa-times"></i></button>
+            <div class="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 pb-4">
+                <span class="font-bold text-2xl text-indigo-600 dark:text-indigo-400 flex items-center gap-3"><i class="fas fa-robot text-3xl"></i> AI Fitness Workspace</span>
+            </div>
+
+            <div id="modalChatBox" class="my-6 flex-1 bg-gray-50 dark:bg-gray-900/60 rounded-2xl p-6 overflow-y-auto space-y-4 border border-gray-200/60 dark:border-gray-700 font-sans">
+                <div class="flex items-start gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center text-sm font-bold flex-shrink-0">AI</div>
+                    <div class="bg-white dark:bg-gray-800 p-4 rounded-2xl rounded-tl-none border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100 font-medium shadow-sm max-w-[80%] text-sm md:text-base leading-relaxed">
+                        Welcome to the expanded AI Fitness Workspace. How can I assist you with your workout routines, muscle training, or recovery?
+                    </div>
+                </div>
+            </div>
+
+            <form onsubmit="handleModalChatSubmit(event)" class="flex gap-3 pt-2">
+                <input type="text" id="modalChatInput" placeholder="Type your fitness question..." class="flex-1 px-6 py-4 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/80 text-base focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-800 dark:text-gray-100">
+                <button type="submit" id="modalSendBtn" class="px-8 py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-base rounded-2xl transition shadow-lg flex items-center gap-2 cursor-pointer">
+                    <span>Send</span>
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- EXPANDABLE SCRATCH PAD MODAL -->
+    <div id="scratchpadModal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-md hidden items-center justify-center p-4 md:p-8">
+        <div class="bg-white dark:bg-gray-800 rounded-3xl w-[92vw] h-[88vh] max-w-none p-6 md:p-10 shadow-2xl border border-gray-200 dark:border-gray-700 relative flex flex-col justify-between modal-active">
+            <button onclick="closeWidgetModal('scratchpadModal')" class="absolute top-6 right-6 w-12 h-12 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 rounded-full flex items-center justify-center text-gray-600 dark:text-gray-200 font-bold text-xl transition"><i class="fas fa-times"></i></button>
+            <div class="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 pb-4 pr-14">
+                <span class="font-bold text-2xl text-amber-600 dark:text-amber-400 flex items-center gap-3"><i class="fas fa-note-sticky text-3xl"></i> Scratch Pad Workspace</span>
+                <span id="modalScratchpadStatus" class="text-xs font-semibold text-gray-400 dark:text-gray-500 hidden sm:inline"></span>
+            </div>
+
+            <textarea id="modalScratchpadInput" oninput="handleScratchpadInput('modalScratchpadInput')" placeholder="Start typing your notes here..." class="my-6 flex-1 w-full bg-gray-50 dark:bg-gray-900/60 rounded-2xl p-6 border border-gray-200/60 dark:border-gray-700 text-sm md:text-base leading-relaxed text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-amber-500 resize-none"></textarea>
+
+            <div class="flex items-center justify-between pt-2">
+                <span class="text-xs text-gray-400">Notes are saved securely to your ScholarPulse360 account</span>
+                <button onclick="saveScratchpad('modalScratchpadInput')" id="modalScratchpadSaveBtn" class="px-8 py-4 bg-amber-600 hover:bg-amber-700 text-white font-bold text-base rounded-2xl transition shadow-lg flex items-center gap-2 cursor-pointer">
+                    <i class="fas fa-save"></i> Save Note
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-800 py-6 px-6 text-center text-xs text-gray-500 dark:text-gray-400">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
+            <p>ScholarPulse360 Suite © 2026. Built for ambitious students.</p>
+            <div class="flex gap-4">
+                <a href="/creator.html" class="hover:underline font-semibold text-indigo-600 dark:text-indigo-400">Creator's Info</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- SERVER CONTEXT JSON INJECTION -->
+    <script id="userData" type="application/json">
+    {% if user %}
+    {
+        "id": {{ (user.id if (user.id is defined and user.id is not none) else (user.user_id if (user.user_id is defined and user.user_id is not none) else (user.email if (user.email is defined and user.email is not none) else ('user_' + user.name if (user.name is defined and user.name is not none) else '')))) | tojson }},
+        "name": {{ (user.name if (user.name is defined and user.name is not none) else '') | tojson }},
+        "state": {{ (user.state if (user.state is defined and user.state is not none) else '') | tojson }},
+        "weight": {{ (user.weight if (user.weight is defined and user.weight is not none) else '') | tojson }},
+        "activityLevel": {{ (user.activity_level if (user.activity_level is defined and user.activity_level is not none) else (user.activityLevel if (user.activityLevel is defined and user.activityLevel is not none) else '')) | tojson }},
+        "climate": {{ (user.climate if (user.climate is defined and user.climate is not none) else (user.local_climate if (user.local_climate is defined and user.local_climate is not none) else '')) | tojson }},
+        "targetWater": {{ (user.target_water if (user.target_water is defined and user.target_water is not none) else (user.water_target if (user.water_target is defined and user.water_target is not none) else (user.target_water_intake if (user.target_water_intake is defined and user.target_water_intake is not none) else ''))) | tojson }},
+        "waterIntake": {{ (user.water_intake if (user.water_intake is defined and user.water_intake is not none) else (user.water_today if (user.water_today is defined and user.water_today is not none) else (user.water if (user.water is defined and user.water is not none) else 0))) | tojson }},
+        "xp": {{ (user.scholar_xp if (user.scholar_xp is defined and user.scholar_xp is not none) else (user.xp if (user.xp is defined and user.xp is not none) else 0)) | tojson }},
+        "scholar_xp": {{ (user.scholar_xp if (user.scholar_xp is defined and user.scholar_xp is not none) else (user.xp if (user.xp is defined and user.xp is not none) else 0)) | tojson }},
+        "rank": {{ (user.scholar_rank if (user.scholar_rank is defined and user.scholar_rank is not none) else (user.rank if (user.rank is defined and user.rank is not none) else 'Beginner')) | tojson }},
+        "scholar_rank": {{ (user.scholar_rank if (user.scholar_rank is defined and user.scholar_rank is not none) else (user.rank if (user.rank is defined and user.rank is not none) else 'Beginner')) | tojson }},
+        "streak": {{ (user.active_streak if (user.active_streak is defined and user.active_streak is not none) else (user.scholar_streak if (user.scholar_streak is defined and user.scholar_streak is not none) else (user.streak if (user.streak is defined and user.streak is not none) else 0))) | tojson }},
+        "goalCompletion": {{ (user.goal_completion if (user.goal_completion is defined and user.goal_completion is not none) else (user.goal_pct if (user.goal_pct is defined and user.goal_pct is not none) else 0)) | tojson }},
+        "tasks": {{ (user.tasks if (user.tasks is defined and user.tasks is not none) else (user.goals if (user.goals is defined and user.goals is not none) else [])) | tojson }}
+    }
+    {% else %}
+    {}
+    {% endif %}
+    </script>
+
+    <!-- CLIENT SCRIPT ENGINE -->
+    <script>
+        function getRankFromXP(xp) {
+            const val = Number(xp) || 0;
+            if (val >= 20000) return 'Master+';
+            if (val >= 12000) return 'Master';
+            if (val >= 7000) return 'Elite';
+            if (val >= 3500) return 'Pro+';
+            if (val >= 1500) return 'Pro';
+            if (val >= 500) return 'Intermediate';
+            return 'Beginner';
+        }
+
+        function resolveScholarRank(xp, serverRank) {
+            if (serverRank && typeof serverRank === 'string' && serverRank.trim() !== '' && serverRank.trim() !== 'Unranked') {
+                return serverRank.trim();
+            }
+            return getRankFromXP(xp);
+        }
+
+        // Safely parse server user data
+        let loggedInUser = {};
+        try {
+            const rawUser = document.getElementById('userData')?.textContent;
+            if (rawUser) {
+                loggedInUser = JSON.parse(rawUser);
+            }
+        } catch (e) {
+            console.error("Failed to parse user session context:", e);
+        }
+
+        loggedInUser.xp = Math.max(0, Number(loggedInUser.scholar_xp !== undefined ? loggedInUser.scholar_xp : (loggedInUser.xp || 0)));
+        loggedInUser.scholar_xp = loggedInUser.xp;
+
+        loggedInUser.rank = resolveScholarRank(loggedInUser.scholar_xp, loggedInUser.scholar_rank || loggedInUser.rank);
+        loggedInUser.scholar_rank = loggedInUser.rank;
+
+        function escapeHtml(str) {
+            if (str === null || str === undefined) return '';
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        function formatWater(val) {
+            if (val === null || val === undefined || isNaN(val)) return '0';
+            const num = parseFloat(val);
+            if (isNaN(num)) return '0';
+            return Number(num.toFixed(2)).toString();
+        }
+
+        function isLoggedInUser(u) {
+            if (!u || !loggedInUser || !loggedInUser.id) return false;
+            const uid = String(loggedInUser.id).trim();
+            if (!uid) return false;
+
+            if (u.id && String(u.id).trim() === uid) return true;
+            if (u.user_id && String(u.user_id).trim() === uid) return true;
+            if (u.email && String(u.email).trim().toLowerCase() === uid.toLowerCase()) return true;
+            if (loggedInUser.name && u.name && u.name.trim().toLowerCase() === loggedInUser.name.trim().toLowerCase()) return true;
+
+            return false;
+        }
+
+        function openWidgetModal(id) { 
+            const el = document.getElementById(id);
+            if(el) el.style.display = 'flex'; 
+        }
+
+        function closeWidgetModal(id) { 
+            const el = document.getElementById(id);
+            if(el) el.style.display = 'none'; 
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') { 
+                ['waterModal', 'waterCriteriaModal', 'aiChatModal', 'scratchpadModal'].forEach(id => closeWidgetModal(id)); 
+            }
+        });
+
+        // Theme Toggle Engine
+        const themeToggleBtn = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+
+        function applyTheme() {
+            if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+                if(themeIcon) themeIcon.className = 'fas fa-sun text-yellow-400';
+            } else {
+                document.documentElement.classList.remove('dark');
+                if(themeIcon) themeIcon.className = 'fas fa-moon text-gray-700';
+            }
+        }
+        applyTheme();
+
+        if(themeToggleBtn) {
+            themeToggleBtn.addEventListener('click', () => {
+                if (document.documentElement.classList.contains('dark')) {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.setItem('theme', 'light');
+                    if(themeIcon) themeIcon.className = 'fas fa-moon text-gray-700';
+                } else {
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('theme', 'dark');
+                    if(themeIcon) themeIcon.className = 'fas fa-sun text-yellow-400';
+                }
+            });
+        }
+
+        function getStorageKey(keyName) {
+            const uid = loggedInUser.id || 'guest';
+            return `sp360_${keyName}_${uid}`;
+        }
+
+        function getUserProfileCriteria() {
+            const uid = loggedInUser.id || 'guest';
+            let storedProfile = {};
+            try {
+                const raw = localStorage.getItem(`sp360_profile_${uid}`);
+                if (raw) storedProfile = JSON.parse(raw);
+            } catch (e) {}
+
+            const targetWater = loggedInUser.targetWater || storedProfile.target_water || storedProfile.targetWater || storedProfile.target_water_intake || '';
+
+            return {
+                weight: loggedInUser.weight || storedProfile.weight || '',
+                activityLevel: loggedInUser.activityLevel || storedProfile.activity_level || storedProfile.activityLevel || '',
+                climate: loggedInUser.climate || storedProfile.climate || storedProfile.local_climate || '',
+                targetWater: targetWater
+            };
+        }
+
+        function hasWaterCriteria() {
+            const { weight, activityLevel, climate, targetWater } = getUserProfileCriteria();
+            return Boolean((targetWater && parseFloat(targetWater) > 0) || (weight && activityLevel && climate));
+        }
+
+        function getPersonalizedWaterTarget() {
+            const criteria = getUserProfileCriteria();
+            if (criteria.targetWater && parseFloat(criteria.targetWater) > 0) {
+                return parseFloat(criteria.targetWater);
+            }
+
+            const { weight, activityLevel, climate } = criteria;
+            if (!weight || !activityLevel || !climate) return 0;
+
+            let w = parseFloat(weight);
+            if (isNaN(w) || w <= 0) return 0;
+
+            let target = w * 0.035;
+
+            const act = String(activityLevel).toLowerCase();
+            if (act.includes('athlete')) target += 1.0;
+            else if (act.includes('active')) target += 0.5;
+
+            const clim = String(climate).toLowerCase();
+            if (clim.includes('hot')) target += 0.5;
+
+            return Math.max(1.5, Math.round(target * 100) / 100);
+        }
+
+        function getTodayDateString() {
+            const d = new Date();
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        function checkAndHandleDailyReset() {
+            const today = getTodayDateString();
+            const lastDateKey = getStorageKey('last_date');
+            const lastDate = localStorage.getItem(lastDateKey);
+
+            if (lastDate && lastDate !== today) {
+                const currentWaterVal = parseFloat(localStorage.getItem(getStorageKey('water'))) || 0;
+                const currentTasksVal = JSON.parse(localStorage.getItem(getStorageKey('tasks'))) || [];
+
+                let history = {};
+                try {
+                    history = JSON.parse(localStorage.getItem(getStorageKey('history'))) || {};
+                } catch(e) {}
+
+                history[lastDate] = {
+                    date: lastDate,
+                    water: currentWaterVal,
+                    tasks: currentTasksVal,
+                    goalPct: calculateGoalPercentage()
+                };
+                localStorage.setItem(getStorageKey('history'), JSON.stringify(history));
+
+                currentWater = 0;
+                localStorage.setItem(getStorageKey('water'), 0);
+
+                if (Array.isArray(tasks)) {
+                    tasks = tasks.map(t => ({ ...t, done: false }));
+                    localStorage.setItem(getStorageKey('tasks'), JSON.stringify(tasks));
+                }
+            }
+
+            localStorage.setItem(lastDateKey, today);
+        }
+
+        // INITIAL VALUE LOADERS
+        function getInitialWater() {
+            const key = getStorageKey('water');
+            const stored = localStorage.getItem(key);
+            if (stored !== null && stored !== '' && !isNaN(parseFloat(stored))) {
+                return parseFloat(stored);
+            }
+            if (loggedInUser.waterIntake !== undefined && loggedInUser.waterIntake !== null && !isNaN(parseFloat(loggedInUser.waterIntake))) {
+                return parseFloat(loggedInUser.waterIntake);
+            }
+            return 0.0;
+        }
+
+        function getInitialTasks() {
+            const key = getStorageKey('tasks');
+            const stored = localStorage.getItem(key);
+            if (stored !== null) {
+                try {
+                    const parsed = JSON.parse(stored);
+                    if (Array.isArray(parsed)) return parsed;
+                } catch (e) {}
+            }
+            if (Array.isArray(loggedInUser.tasks) && loggedInUser.tasks.length > 0) {
+                return loggedInUser.tasks;
+            }
+            return [];
+        }
+
+        // WATER TRACKER ENGINE
+        let currentWater = getInitialWater();
+
+        function handleWaterWidgetClick() {
+            if (!hasWaterCriteria()) {
+                openWidgetModal('waterCriteriaModal');
+            } else {
+                openWidgetModal('waterModal');
+            }
+        }
+
+        function renderWater() {
+            const target = getPersonalizedWaterTarget();
+            const waterBars = document.querySelectorAll('.waterBar');
+            const waterVals = document.querySelectorAll('.waterVal');
+
+            if (!hasWaterCriteria() || target <= 0) {
+                waterVals.forEach(el => el.innerText = 'Criteria Required');
+                waterBars.forEach(el => el.style.width = '0%');
+            } else {
+                const formattedCurrent = formatWater(currentWater);
+                const formattedTarget = formatWater(target);
+
+                waterVals.forEach(el => el.innerText = `${formattedCurrent} / ${formattedTarget} L`);
+                const pct = Math.min(100, Math.max(0, (currentWater / target) * 100));
+                waterBars.forEach(el => el.style.width = `${pct}%`);
+            }
+        }
+
+        async function addWater(amount) {
+            if (!hasWaterCriteria()) {
+                openWidgetModal('waterCriteriaModal');
+                return;
+            }
+
+            let amountInL = amount;
+            let amountMl = amount;
+            if (Math.abs(amount) >= 10) {
+                amountInL = amount / 1000;
+            } else {
+                amountMl = Math.round(amount * 1000);
+            }
+
+            const target = getPersonalizedWaterTarget();
+            currentWater = Math.max(0, Math.min(target, Math.round((currentWater + amountInL) * 100) / 100));
+            localStorage.setItem(getStorageKey('water'), currentWater);
+            
+            // Live update metrics linked with index.html
+            updateDashboardMetricsDisplay();
+
+            // Persist water intake to backend so Scholar XP, Rank & Streak update live server-side
+            if (amountMl > 0) {
+                try {
+                    const waterRes = await fetch('/api/water', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ amount_ml: Math.round(amountMl) })
+                    });
+                    const waterData = await waterRes.json().catch(() => null);
+
+                    if (!waterRes.ok) {
+                        if (waterData && waterData.criteria_missing) {
+                            alert('Please complete your Water Intake Criteria (weight, activity level, climate) in your Profile first.');
+                        } else if (waterRes.status === 401) {
+                            alert('Your session has expired. Please log in again so your progress can be saved.');
+                        }
+                    } else if (waterData) {
+                        const newXp = waterData.scholar_xp !== undefined ? waterData.scholar_xp : waterData.xp;
+                        if (newXp !== undefined && newXp !== null && !isNaN(Number(newXp))) {
+                            loggedInUser.xp = Math.max(0, Number(newXp));
+                            loggedInUser.scholar_xp = loggedInUser.xp;
+                        }
+                        const newRank = waterData.scholar_rank || waterData.rank;
+                        loggedInUser.rank = resolveScholarRank(loggedInUser.scholar_xp, newRank);
+                        loggedInUser.scholar_rank = loggedInUser.rank;
+                        const newStreak = waterData.streak !== undefined ? waterData.streak : waterData.active_streak;
+                        if (newStreak !== undefined && newStreak !== null && !isNaN(Number(newStreak))) {
+                            loggedInUser.streak = Number(newStreak);
+                        }
+                        updateDashboardMetricsDisplay();
+                    }
+                } catch (e) {
+                    console.warn('[addWater] network error talking to /api/water:', e);
+                }
+            }
+
+            await fetchUserStats();
+            syncDataToBackend();
+        }
+
+        // TARGET MANAGER & GOAL PERCENTAGE
+        let tasks = getInitialTasks();
+
+        function calculateGoalPercentage() {
+            let totalScore = 0;
+            let categories = 0;
+
+            if (Array.isArray(tasks) && tasks.length > 0) {
+                const completed = tasks.filter(t => t && t.done).length;
+                totalScore += (completed / tasks.length) * 100;
+                categories++;
+            }
+
+            const waterTarget = getPersonalizedWaterTarget();
+            if (hasWaterCriteria() && waterTarget > 0) {
+                const waterPct = Math.min(100, Math.max(0, (currentWater / waterTarget) * 100));
+                totalScore += waterPct;
+                categories++;
+            }
+
+            if (categories === 0) return 0;
+            const res = Math.min(100, Math.max(0, Math.round(totalScore / categories)));
+            return isNaN(res) ? 0 : res;
+        }
+
+        // RENDER TOP 4 METRICS DISPLAY (Linked with index.html logic)
+        function updateDashboardMetricsDisplay() {
+            const goalPct = calculateGoalPercentage();
+
+            const goalValEl = document.getElementById('widgetGoalCompletionVal');
+            const goalBarEl = document.getElementById('widgetGoalBar');
+            if (goalValEl) goalValEl.innerText = `${goalPct}%`;
+            if (goalBarEl) goalBarEl.style.width = `${goalPct}%`;
+
+            // Calculate live local XP from goal percentage matching index.html
+            const liveXp = Math.round(goalPct * 10);
+            const currentStoredXp = Number(loggedInUser.scholar_xp !== undefined ? loggedInUser.scholar_xp : (loggedInUser.xp || 0));
+            const displayXp = Math.max(currentStoredXp, liveXp);
+            
+            loggedInUser.xp = displayXp;
+            loggedInUser.scholar_xp = displayXp;
+
+            // Active Day Streak (authoritative server value)
+            const streakVal = Number(loggedInUser.streak) || 0;
+            const streakValEl = document.getElementById('widgetStreakVal');
+            if (streakValEl) streakValEl.innerText = `${streakVal} ${streakVal === 1 ? 'Day' : 'Days'}`;
+
+            // Scholar XP (live updated display)
+            const xpValEl = document.getElementById('widgetXpVal');
+            if (xpValEl) xpValEl.innerText = `${displayXp.toLocaleString()} XP`;
+
+            // Scholar Rank (dynamically derived rank matching index.html / app.py tier system)
+            const displayRank = resolveScholarRank(displayXp, loggedInUser.scholar_rank || loggedInUser.rank);
+            loggedInUser.scholar_rank = displayRank;
+            loggedInUser.rank = displayRank;
+
+            const rankValEl = document.getElementById('widgetRankVal');
+            if (rankValEl) {
+                rankValEl.innerText = displayRank;
+            }
+
+            renderWater();
+        }
+
+        // FETCH AUTHORITATIVE USER PROFILE STATS FROM BACKEND (/api/profile)
+        async function fetchUserStats() {
+            try {
+                const res = await fetch('/api/profile');
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data) {
+                        const userObj = data.user || data.profile || data;
+                        
+                        const newXp = userObj.scholar_xp ?? userObj.xp ?? data.xp ?? data.scholar_xp;
+                        if (newXp !== undefined && newXp !== null && !isNaN(Number(newXp))) {
+                            loggedInUser.xp = Number(newXp);
+                            loggedInUser.scholar_xp = Number(newXp);
+                        }
+
+                        const newStreak = userObj.active_streak ?? userObj.scholar_streak ?? userObj.streak ?? data.streak ?? data.active_streak;
+                        if (newStreak !== undefined && newStreak !== null && !isNaN(Number(newStreak))) {
+                            loggedInUser.streak = Number(newStreak);
+                        }
+
+                        const serverRank = userObj.scholar_rank || userObj.rank || data.scholar_rank || data.rank;
+                        loggedInUser.rank = resolveScholarRank(loggedInUser.xp, serverRank);
+                        loggedInUser.scholar_rank = loggedInUser.rank;
+
+                        updateDashboardMetricsDisplay();
+                    }
+                }
+            } catch (e) {
+                console.warn("fetchUserStats error:", e);
+            }
+        }
+
+        // BACKEND SYNC (Scholar Rank, Scholar XP, Streak data sent to API)
+        async function syncDataToBackend() {
+            if (!loggedInUser.id) return;
+            
+            const payload = {
+                user_id: loggedInUser.id,
+                date: getTodayDateString(),
+                water_intake: currentWater,
+                water_target: getPersonalizedWaterTarget(),
+                tasks: tasks,
+                goal_completion: calculateGoalPercentage(),
+                scratchpad: ''
+            };
+
+            try {
+                let res = await fetch('/api/user/sync-home', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (!res.ok) {
+                    res = await fetch('/api/score?date=' + encodeURIComponent(getTodayDateString()));
+                }
+                if (res.ok) {
+                    const resData = await res.json();
+                    if (resData) {
+                        const updatedXp = resData.scholar_xp !== undefined ? resData.scholar_xp : resData.xp;
+                        if (updatedXp !== undefined && updatedXp !== null && !isNaN(Number(updatedXp))) {
+                            const parsedXp = Math.max(0, Number(updatedXp));
+                            loggedInUser.xp = parsedXp;
+                            loggedInUser.scholar_xp = parsedXp;
+                        }
+
+                        const newRank = resData.scholar_rank || (typeof resData.rank === 'string' ? resData.rank : null);
+                        loggedInUser.scholar_rank = resolveScholarRank(loggedInUser.scholar_xp, newRank);
+                        loggedInUser.rank = loggedInUser.scholar_rank;
+
+                        if (resData.streak !== undefined) loggedInUser.streak = resData.streak;
+                        else if (resData.active_streak !== undefined) loggedInUser.streak = resData.active_streak;
+                        else if (resData.scholar_streak !== undefined) loggedInUser.streak = resData.scholar_streak;
+
+                        if (resData.goal_completion !== undefined) loggedInUser.goalCompletion = resData.goal_completion;
+                        else if (resData.goal_pct !== undefined) loggedInUser.goalCompletion = resData.goal_pct;
+
+                        if (resData.water_intake !== undefined) currentWater = parseFloat(resData.water_intake) || currentWater;
+
+                        updateDashboardMetricsDisplay();
+                    }
+                }
+            } catch (e) {
+                console.warn("syncDataToBackend network fallback:", e);
+            }
+        }
+
+        // ==========================================
+        // AI FITNESS CHAT ENGINE
+        // ==========================================
+        async function sendFitnessChatMessage(promptText, chatBoxId, sendBtnId, inputId) {
+            const query = promptText ? promptText.trim() : '';
+            if (!query) return;
+
+            const chatBox = document.getElementById(chatBoxId);
+            const sendBtn = document.getElementById(sendBtnId);
+            const input = document.getElementById(inputId);
+
+            if (input) input.value = '';
+
+            if (chatBox) {
+                const userMsgEl = document.createElement('div');
+                userMsgEl.className = 'flex items-start justify-end gap-2.5';
+                userMsgEl.innerHTML = `
+                    <div class="bg-indigo-600 text-white p-3 rounded-2xl rounded-tr-none shadow-sm max-w-[85%] text-xs md:text-sm">
+                        ${escapeHtml(query)}
+                    </div>
+                    <div class="w-7 h-7 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 flex items-center justify-center text-xs font-bold flex-shrink-0">You</div>
+                `;
+                chatBox.appendChild(userMsgEl);
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
+
+            syncChatToOtherBox(chatBoxId, 'You', query);
+
+            let botMsgContainer = null;
+            if (chatBox) {
+                botMsgContainer = document.createElement('div');
+                botMsgContainer.className = 'flex items-start gap-2.5';
+                botMsgContainer.innerHTML = `
+                    <div class="w-7 h-7 rounded-lg bg-indigo-600 text-white flex items-center justify-center text-xs font-bold flex-shrink-0">AI</div>
+                    <div class="bg-white dark:bg-gray-800 p-3 rounded-2xl rounded-tl-none border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 text-xs md:text-sm italic shadow-sm max-w-[85%] botText">
+                        Thinking...
+                    </div>
+                `;
+                chatBox.appendChild(botMsgContainer);
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
+
+            if (sendBtn) sendBtn.disabled = true;
+
+            try {
+                const res = await fetch('/api/fitness/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: query })
+                });
+
+                const data = await res.json().catch(() => ({}));
+
+                if (res.ok && data.success !== false) {
+                    const aiReply = data.reply || data.response || 'Sorry, I did not get a response. Please try again.';
+                    updateBotUI(botMsgContainer, aiReply);
+                    syncChatToOtherBox(chatBoxId, 'AI', aiReply);
+                } else {
+                    const errText = "Sorry, I couldn't reach the AI assistant right now. Please try again in a moment.";
+                    updateBotUI(botMsgContainer, errText);
+                    syncChatToOtherBox(chatBoxId, 'AI', errText);
+                }
+            } catch (err) {
+                const errText = "Sorry, I couldn't reach the AI assistant right now. Please check your connection and try again.";
+                updateBotUI(botMsgContainer, errText);
+                syncChatToOtherBox(chatBoxId, 'AI', errText);
+            } finally {
+                if (sendBtn) sendBtn.disabled = false;
+                if (chatBox) chatBox.scrollTop = chatBox.scrollHeight;
+            }
+        }
+
+        function updateBotUI(container, text) {
+            if (container) {
+                const textEl = container.querySelector('.botText');
+                if (textEl) {
+                    textEl.className = 'bg-white dark:bg-gray-800 p-3 rounded-2xl rounded-tl-none border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100 font-medium shadow-sm max-w-[85%] text-xs md:text-sm leading-relaxed';
+                    textEl.innerText = text;
+                }
+            }
+        }
+
+        function syncChatToOtherBox(sourceBoxId, sender, text) {
+            const targetBoxId = sourceBoxId === 'inlineChatBox' ? 'modalChatBox' : 'inlineChatBox';
+            const targetBox = document.getElementById(targetBoxId);
+            if (!targetBox) return;
+
+            const msgEl = document.createElement('div');
+            if (sender === 'You') {
+                msgEl.className = 'flex items-start justify-end gap-2.5';
+                msgEl.innerHTML = `
+                    <div class="bg-indigo-600 text-white p-3 rounded-2xl rounded-tr-none shadow-sm max-w-[85%] text-xs md:text-sm">
+                        ${escapeHtml(text)}
+                    </div>
+                    <div class="w-7 h-7 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 flex items-center justify-center text-xs font-bold flex-shrink-0">You</div>
+                `;
+            } else {
+                msgEl.className = 'flex items-start gap-2.5';
+                msgEl.innerHTML = `
+                    <div class="w-7 h-7 rounded-lg bg-indigo-600 text-white flex items-center justify-center text-xs font-bold flex-shrink-0">AI</div>
+                    <div class="bg-white dark:bg-gray-800 p-3 rounded-2xl rounded-tl-none border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100 font-medium shadow-sm max-w-[85%] text-xs md:text-sm leading-relaxed">
+                        ${escapeHtml(text)}
+                    </div>
+                `;
+            }
+            targetBox.appendChild(msgEl);
+            targetBox.scrollTop = targetBox.scrollHeight;
+        }
+
+        function handleInlineChatSubmit(e) {
+            e.preventDefault();
+            const input = document.getElementById('inlineChatInput');
+            if (input && input.value.trim()) {
+                sendFitnessChatMessage(input.value.trim(), 'inlineChatBox', 'inlineSendBtn', 'inlineChatInput');
+            }
+        }
+
+        function handleModalChatSubmit(e) {
+            e.preventDefault();
+            const input = document.getElementById('modalChatInput');
+            if (input && input.value.trim()) {
+                sendFitnessChatMessage(input.value.trim(), 'modalChatBox', 'modalSendBtn', 'modalChatInput');
+            }
+        }
+
+        // ==========================================
+        // SCRATCH PAD ENGINE
+        // ==========================================
+        let scratchpadSaveTimeout = null;
+
+        function setScratchpadStatus(text) {
+            ['scratchpadStatus', 'modalScratchpadStatus'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.innerText = text;
+            });
+        }
+
+        async function loadScratchpad() {
+            setScratchpadStatus('Loading...');
+            try {
+                const res = await fetch('/api/scratchpad');
+                const data = await res.json().catch(() => ({}));
+                if (res.ok && data.success) {
+                    const content = data.content || '';
+                    const inlineEl = document.getElementById('inlineScratchpadInput');
+                    const modalEl = document.getElementById('modalScratchpadInput');
+                    if (inlineEl) inlineEl.value = content;
+                    if (modalEl) modalEl.value = content;
+                    setScratchpadStatus('All changes saved');
+                } else {
+                    setScratchpadStatus('');
+                }
+            } catch (e) {
+                console.warn('loadScratchpad error:', e);
+                setScratchpadStatus('Offline - showing local note');
+            }
+        }
+
+        function syncScratchpadToModal() {
+            const inlineEl = document.getElementById('inlineScratchpadInput');
+            const modalEl = document.getElementById('modalScratchpadInput');
+            if (inlineEl && modalEl) modalEl.value = inlineEl.value;
+        }
+
+        function syncScratchpadFromModal() {
+            const inlineEl = document.getElementById('inlineScratchpadInput');
+            const modalEl = document.getElementById('modalScratchpadInput');
+            if (inlineEl && modalEl) modalEl.value = modalEl.value;
+        }
+
+        function openScratchpadModal() {
+            syncScratchpadToModal();
+            openWidgetModal('scratchpadModal');
+            const modalEl = document.getElementById('modalScratchpadInput');
+            if (modalEl) modalEl.focus();
+        }
+
+        async function saveScratchpad(sourceId) {
+            const sourceEl = document.getElementById(sourceId);
+            if (!sourceEl) return;
+            const content = sourceEl.value;
+
+            if (sourceId === 'inlineScratchpadInput') syncScratchpadToModal();
+            else syncScratchpadFromModal();
+
+            const saveBtnIds = ['inlineScratchpadSaveBtn', 'modalScratchpadSaveBtn'];
+            saveBtnIds.forEach(id => {
+                const btn = document.getElementById(id);
+                if (btn) btn.disabled = true;
+            });
+            setScratchpadStatus('Saving...');
+
+            try {
+                const res = await fetch('/api/scratchpad', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ content })
+                });
+                const data = await res.json().catch(() => ({}));
+                if (res.ok && data.success !== false) {
+                    setScratchpadStatus('All changes saved');
+                } else {
+                    setScratchpadStatus('Could not save. Please try again.');
+                }
+            } catch (e) {
+                console.warn('saveScratchpad error:', e);
+                setScratchpadStatus('Offline - changes not saved');
+            } finally {
+                saveBtnIds.forEach(id => {
+                    const btn = document.getElementById(id);
+                    if (btn) btn.disabled = false;
+                });
+            }
+        }
+
+        function handleScratchpadInput(sourceId) {
+            if (sourceId === 'inlineScratchpadInput') syncScratchpadToModal();
+            else syncScratchpadFromModal();
+
+            setScratchpadStatus('Unsaved changes...');
+            if (scratchpadSaveTimeout) clearTimeout(scratchpadSaveTimeout);
+            scratchpadSaveTimeout = setTimeout(() => saveScratchpad(sourceId), 1200);
+        }
+
+        // ==========================================
+        // AI NUTRITION TRACKER & SUPABASE PERSISTENCE
+        // ==========================================
+        let lastDietAnalysis = null;
+        let dietRecordSavedForCurrentText = false;
+
+        function setDietLoading(isLoading) {
+            const btn = document.getElementById('analyzeDietBtn');
+            if (!btn) return;
+            if (isLoading) {
+                btn.dataset.originalHtml = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analyzing...';
+                btn.disabled = true;
+            } else {
+                if (btn.dataset.originalHtml) btn.innerHTML = btn.dataset.originalHtml;
+                btn.disabled = false;
+            }
+        }
+
+        function renderDietAnalysis(nutrition) {
+            if (!nutrition) return;
+            const resultBox = document.getElementById('dietAnalysisResult');
+            if (resultBox) resultBox.classList.remove('hidden');
+
+            const energyScore = (nutrition.energy_score !== undefined && nutrition.energy_score !== null) ? nutrition.energy_score : (nutrition.score ?? '--');
+            const scoreEl = document.getElementById('dietEnergyScore');
+            if (scoreEl) scoreEl.innerText = `${energyScore}/100`;
+
+            const expEl = document.getElementById('dietScoreExplanation');
+            if (expEl) expEl.innerText = nutrition.general_analysis || nutrition.overall_quality || nutrition.explanation || '';
+
+            const calEl = document.getElementById('dietCalories');
+            if (calEl) calEl.innerText = `${nutrition.calories ?? nutrition.calories_kcal ?? 0} kcal`;
+
+            const protEl = document.getElementById('dietProtein');
+            if (protEl) protEl.innerText = `${nutrition.protein_g ?? nutrition.protein ?? 0} g`;
+
+            const carbEl = document.getElementById('dietCarbs');
+            if (carbEl) carbEl.innerText = `${nutrition.carbs_g ?? nutrition.carbohydrates ?? nutrition.carbs ?? 0} g`;
+
+            const fatEl = document.getElementById('dietFats');
+            if (fatEl) fatEl.innerText = `${nutrition.fat_g ?? nutrition.fats ?? nutrition.fat ?? 0} g`;
+
+            const extras = [];
+            if (nutrition.overall_quality) extras.push(`<strong>Quality:</strong> ${escapeHtml(nutrition.overall_quality)}`);
+            if (nutrition.fiber_g || nutrition.fiber) extras.push(`<strong>Fiber:</strong> ${escapeHtml(nutrition.fiber_g || nutrition.fiber)} g`);
+            if (Array.isArray(nutrition.deficiencies) && nutrition.deficiencies.length) {
+                extras.push(`<strong>Possible gaps:</strong> ${escapeHtml(nutrition.deficiencies.join(', '))}`);
+            }
+            if (Array.isArray(nutrition.recommendations) && nutrition.recommendations.length) {
+                extras.push(`<strong>Tips:</strong> ${escapeHtml(nutrition.recommendations.join(' '))}`);
+            }
+            const extraEl = document.getElementById('dietDetailsExtra');
+            if (extraEl) extraEl.innerHTML = extras.join('<br>');
+        }
+
+        function renderNeutralDietState() {
+            const resultBox = document.getElementById('dietAnalysisResult');
+            if (resultBox) resultBox.classList.remove('hidden');
+
+            const scoreEl = document.getElementById('dietEnergyScore');
+            if (scoreEl) scoreEl.innerText = `0/100`;
+
+            const expEl = document.getElementById('dietScoreExplanation');
+            if (expEl) expEl.innerText = "No saved diet for this date";
+
+            const calEl = document.getElementById('dietCalories');
+            if (calEl) calEl.innerText = `0 kcal`;
+
+            const protEl = document.getElementById('dietProtein');
+            if (protEl) protEl.innerText = `0 g`;
+
+            const carbEl = document.getElementById('dietCarbs');
+            if (carbEl) carbEl.innerText = `0 g`;
+
+            const fatEl = document.getElementById('dietFats');
+            if (fatEl) fatEl.innerText = `0 g`;
+
+            const extraEl = document.getElementById('dietDetailsExtra');
+            if (extraEl) extraEl.innerHTML = `<em>Select a date or enter your food log above to calculate macros.</em>`;
+
+            lastDietAnalysis = null;
+        }
+
+        async function analyzeDiet() {
+            const input = document.getElementById('dietInput');
+            const rawText = input ? input.value.trim() : '';
+
+            if (!rawText) {
+                alert("Please enter the food items you consumed.");
+                return;
+            }
+
+            setDietLoading(true);
+            try {
+                const dateStr = document.getElementById('dietDatePicker')?.value || getTodayDateString();
+                const res = await fetch('/api/fitness/diet/analyze', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ food_input: rawText, date: dateStr })
+                });
+                const data = await res.json().catch(() => ({}));
+
+                if (!res.ok || data.success === false) {
+                    alert(data.error || 'Could not analyze this entry right now. Please try again.');
+                    return;
+                }
+
+                lastDietAnalysis = data.nutrition || data.analysis || data || {};
+                renderDietAnalysis(lastDietAnalysis);
+                dietRecordSavedForCurrentText = false;
+            } catch (e) {
+                alert('Network error while analyzing your food entry. Please try again.');
+            } finally {
+                setDietLoading(false);
+            }
+        }
+
+        async function saveDietRecord() {
+            const dietText = document.getElementById('dietInput')?.value.trim();
+            if (!dietText) {
+                alert("Please log food details before saving.");
+                return;
+            }
+
+            const saveBtn = document.getElementById('saveDietBtn');
+            const dateStr = document.getElementById('dietDatePicker')?.value || getTodayDateString();
+
+            if (saveBtn) saveBtn.disabled = true;
+
+            const calories = Number(lastDietAnalysis?.calories ?? lastDietAnalysis?.calories_kcal ?? 0);
+            const protein = Number(lastDietAnalysis?.protein_g ?? lastDietAnalysis?.protein ?? 0);
+            const carbs = Number(lastDietAnalysis?.carbs_g ?? lastDietAnalysis?.carbohydrates ?? lastDietAnalysis?.carbs ?? 0);
+            const fats = Number(lastDietAnalysis?.fat_g ?? lastDietAnalysis?.fats ?? lastDietAnalysis?.fat ?? 0);
+            const fiber = Number(lastDietAnalysis?.fiber_g ?? lastDietAnalysis?.fiber ?? 0);
+            const energy_score = Number(lastDietAnalysis?.energy_score ?? lastDietAnalysis?.score ?? 0);
+
+            let breakdown_json = "";
+            if (lastDietAnalysis) {
+                breakdown_json = typeof lastDietAnalysis === 'string' ? lastDietAnalysis : JSON.stringify(lastDietAnalysis);
+            } else {
+                breakdown_json = JSON.stringify({
+                    general_analysis: "Logged diet entry.",
+                    calories, protein, carbs, fats, fiber, energy_score
+                });
+            }
+
+            const savePayload = {
+                date: dateStr,
+                food_input: dietText,
+                calories: calories,
+                protein: protein,
+                carbs: carbs,
+                fats: fats,
+                fat: fats,
+                fiber: fiber,
+                energy_score: energy_score,
+                breakdown_json: breakdown_json,
+                analysis: lastDietAnalysis || {}
+            };
+
+            try {
+                let res = await fetch('/api/fitness/diet/save', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(savePayload)
+                });
+
+                if (!res.ok) {
+                    res = await fetch('/api/fitness/diet/records', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(savePayload)
+                    });
+                }
+
+                const data = await res.json().catch(() => ({}));
+
+                if (!res.ok || data.success === false) {
+                    alert(data.error || 'Could not save this diet record right now.');
+                    return;
+                }
+
+                dietRecordSavedForCurrentText = true;
+                alert("Diet record saved successfully!");
+
+                if (saveBtn) {
+                    const orig = saveBtn.innerHTML;
+                    saveBtn.innerHTML = `<i class="fas fa-check text-emerald-500"></i> Saved!`;
+                    setTimeout(() => { saveBtn.innerHTML = orig; }, 2500);
+                }
+            } catch (e) {
+                alert('Network error while saving your diet record.');
+            } finally {
+                if (saveBtn) saveBtn.disabled = false;
+            }
+        }
+
+        async function loadDietForSelectedDate() {
+            const dateStr = document.getElementById('dietDatePicker')?.value || getTodayDateString();
+            dietRecordSavedForCurrentText = false;
+
+            try {
+                let res = await fetch(`/api/fitness/diet/get?date=${encodeURIComponent(dateStr)}`);
+                if (!res.ok) {
+                    res = await fetch(`/api/fitness/diet/records?date=${encodeURIComponent(dateStr)}`);
+                }
+                const data = await res.json().catch(() => ({}));
+
+                let record = null;
+                if (data && data.success && data.record) {
+                    record = data.record;
+                } else if (data && data.record) {
+                    record = data.record;
+                } else if (data && data.diet) {
+                    record = data.diet;
+                } else if (Array.isArray(data) && data.length > 0) {
+                    record = data[0];
+                } else if (data && Array.isArray(data.records) && data.records.length > 0) {
+                    record = data.records[0];
+                } else if (data && (data.food_input || data.calories !== undefined)) {
+                    record = data;
+                }
+
+                if (!record || (!record.food_input && !record.meals && !record.calories)) {
+                    document.getElementById('dietInput').value = '';
+                    renderNeutralDietState();
+                    return;
+                }
+
+                document.getElementById('dietInput').value = record.food_input || record.meals || record.food || '';
+
+                let nutrition = null;
+                if (record.breakdown_json) {
+                    try {
+                        nutrition = typeof record.breakdown_json === 'string' ? JSON.parse(record.breakdown_json) : record.breakdown_json;
+                    } catch (e) {
+                        nutrition = null;
+                    }
+                }
+                if (!nutrition && record.ai_analysis) {
+                    try { 
+                        nutrition = typeof record.ai_analysis === 'string' ? JSON.parse(record.ai_analysis) : record.ai_analysis; 
+                    } catch (e) {}
+                }
+                if (!nutrition && record.analysis) {
+                    nutrition = typeof record.analysis === 'string' ? JSON.parse(record.analysis) : record.analysis;
+                }
+
+                if (!nutrition) {
+                    nutrition = {
+                        calories: record.calories || 0,
+                        protein_g: record.protein || 0,
+                        carbs_g: record.carbohydrates || record.carbs || 0,
+                        fat_g: record.fats || record.fat || 0,
+                        fiber_g: record.fiber || 0,
+                        energy_score: record.energy_score || record.score || 0,
+                        general_analysis: record.general_analysis || record.overall_quality || "Loaded saved diet record.",
+                        deficiencies: record.deficiencies || [],
+                        recommendations: record.recommendations || []
+                    };
+                }
+
+                lastDietAnalysis = nutrition;
+                dietRecordSavedForCurrentText = true;
+                renderDietAnalysis(nutrition);
+            } catch (e) {
+                console.error('Could not load diet record for selected date:', e);
+                renderNeutralDietState();
+            }
+        }
+
+        // ==========================================
+        // AI STUDENT PLAN GENERATORS
+        // ==========================================
+        function setGeneratorLoading(btnId, isLoading, loadingLabel) {
+            const btn = document.getElementById(btnId);
+            if (!btn) return;
+            if (isLoading) {
+                btn.dataset.originalHtml = btn.innerHTML;
+                btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${loadingLabel}`;
+                btn.disabled = true;
+            } else {
+                if (btn.dataset.originalHtml) btn.innerHTML = btn.dataset.originalHtml;
+                btn.disabled = false;
+            }
+        }
+
+        function renderPlanText(contentBoxId, text) {
+            const contentBox = document.getElementById(contentBoxId);
+            if (!contentBox) return;
+            const safe = escapeHtml(text).replace(/\n/g, '<br>');
+            contentBox.innerHTML = `<div class="whitespace-pre-wrap">${safe}</div>`;
+        }
+
+        async function generateStudentDietChart(e) {
+            e.preventDefault();
+            const goal = document.getElementById('dietGoal').value;
+            const type = document.getElementById('dietType').value;
+            const budget = document.getElementById('dietBudget').value;
+
+            const outputContainer = document.getElementById('dietChartOutput');
+            outputContainer.classList.remove('hidden');
+
+            setGeneratorLoading('generateDietBtn', true, 'Generating...');
+            renderPlanText('dietChartContent', 'Generating your personalized student diet chart...');
+
+            const prompt = `Create a practical one-day Indian student diet chart. Fitness goal: ${goal}. Diet preference: ${type}. Budget/access: ${budget}. ` +
+                `Structure it by meal time (morning, breakfast, lunch, evening snack, dinner) with concrete food items and approximate portions suited for a hostel/college student. ` +
+                `End with one short practical student tip. Keep it concise and use plain text with line breaks between meals, no markdown tables.`;
+
+            try {
+                const res = await fetch('/api/fitness/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: prompt })
+                });
+                const data = await res.json().catch(() => ({}));
+
+                if (!res.ok || data.success === false) {
+                    renderPlanText('dietChartContent', data.error || 'Could not generate a diet chart right now. Please try again.');
+                    return;
+                }
+
+                renderPlanText('dietChartContent', data.reply || data.response || 'No plan was returned. Please try again.');
+            } catch (err) {
+                renderPlanText('dietChartContent', 'Network error while generating your diet chart. Please try again.');
+            } finally {
+                setGeneratorLoading('generateDietBtn', false, '');
+            }
+        }
+
+        async function generateStudentWorkoutChart(e) {
+            e.preventDefault();
+            const location = document.getElementById('workoutLocation').value;
+            const time = document.getElementById('workoutTime').value;
+            const target = document.getElementById('workoutTarget').value;
+
+            const outputContainer = document.getElementById('workoutChartOutput');
+            outputContainer.classList.remove('hidden');
+
+            setGeneratorLoading('generateWorkoutBtn', true, 'Generating...');
+            renderPlanText('workoutChartContent', 'Generating your personalized workout routine...');
+
+            const prompt = `Create a practical workout routine for a busy college student. Venue/equipment: ${location}. Time available: ${time}. Target area/focus: ${target}. ` +
+                `Include a short warmup, 3-5 exercises with sets/reps or duration, and a short cooldown. End with one short scheduling tip for students. ` +
+                `Keep it concise and use plain text with line breaks between exercises, no markdown tables.`;
+
+            try {
+                const res = await fetch('/api/fitness/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: prompt })
+                });
+                const data = await res.json().catch(() => ({}));
+
+                if (!res.ok || data.success === false) {
+                    renderPlanText('workoutChartContent', data.error || 'Could not generate a workout routine right now. Please try again.');
+                    return;
+                }
+
+                renderPlanText('workoutChartContent', data.reply || data.response || 'No plan was returned. Please try again.');
+            } catch (err) {
+                renderPlanText('workoutChartContent', 'Network error while generating your workout routine. Please try again.');
+            } finally {
+                setGeneratorLoading('generateWorkoutBtn', false, '');
+            }
+        }
+
+        function copyGeneratedPlan(contentBoxId, btnEl) {
+            const contentBox = document.getElementById(contentBoxId);
+            const text = contentBox ? contentBox.innerText : '';
+            if (!text) return;
+
+            navigator.clipboard.writeText(text).then(() => {
+                if (btnEl) {
+                    const orig = btnEl.innerHTML;
+                    btnEl.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                    setTimeout(() => { btnEl.innerHTML = orig; }, 2000);
+                }
+            }).catch(() => {
+                alert('Could not copy the plan. Please select and copy the text manually.');
+            });
+        }
+
+        // ==========================================
+        // INITIALIZATION
+        // ==========================================
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAndHandleDailyReset();
+
+            const datePicker = document.getElementById('dietDatePicker');
+            if (datePicker) {
+                datePicker.value = getTodayDateString();
+                loadDietForSelectedDate();
+            }
+
+            const dietInputEl = document.getElementById('dietInput');
+            if (dietInputEl) {
+                dietInputEl.addEventListener('input', () => { 
+                    dietRecordSavedForCurrentText = false; 
+                });
+            }
+
+            renderWater();
+            updateDashboardMetricsDisplay();
+            fetchUserStats();
+            syncDataToBackend();
+            loadScratchpad();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ScholarPulse360 - Log In</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f3ff',
+                            100: '#e0e7ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 min-h-screen flex items-center justify-center transition-colors duration-300 p-4">
+
+    <!-- Theme Toggle Button -->
+    <button id="themeToggle" class="fixed top-5 right-5 p-3 rounded-full bg-white dark:bg-gray-800 shadow-lg text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-700 hover:scale-110 transition-all">
+        <i id="themeIcon" class="fas fa-moon text-xl"></i>
+    </button>
+
+    <!-- Main Container -->
+    <div class="w-full max-w-md bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-xl p-8 transition-colors duration-300">
+        
+        <!-- Header / Logo -->
+        <div class="text-center mb-8">
+            <img src="{{ url_for('static', filename='logo.png') }}" alt="ScholarPulse360 Logo" class="w-16 h-16 mx-auto mb-4 object-contain">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Welcome Back</h2>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Log in to your ScholarPulse360 account</p>
+        </div>
+
+        <!-- Error Message Alert -->
+        {% if error %}
+        <div class="mb-5 p-3.5 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 text-sm rounded-xl flex items-center gap-2">
+            <i class="fas fa-exclamation-circle"></i>
+            <span>{{ error }}</span>
+        </div>
+        {% endif %}
+
+        <!-- Form -->
+        <form action="/login" method="POST" class="space-y-5">
+            <div>
+                <label for="username" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Username or Email</label>
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                        <i class="fas fa-user"></i>
+                    </span>
+                    <input type="text" id="username" name="username" required
+                           class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white dark:focus:bg-gray-800 transition"
+                           placeholder="Enter your username or email">
+                </div>
+            </div>
+
+            <div>
+                <div class="flex justify-between items-center mb-1">
+                    <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Password</label>
+                    <a href="/forgot-password" class="text-xs text-brand-600 dark:text-brand-500 hover:underline">Forgot password?</a>
+                </div>
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                        <i class="fas fa-lock"></i>
+                    </span>
+                    <input type="password" id="password" name="password" required
+                           class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white dark:focus:bg-gray-800 transition"
+                           placeholder="••••••••">
+                </div>
+            </div>
+
+            <button type="submit" 
+                    class="w-full py-3 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl shadow-md transition duration-200">
+                Log In
+            </button>
+        </form>
+
+        <!-- Footer -->
+        <p class="mt-8 text-center text-sm text-gray-600 dark:text-gray-400">
+            Don't have an account? 
+            <a href="/signup" class="text-brand-600 dark:text-brand-500 font-semibold hover:underline">Sign Up</a>
+        </p>
+    </div>
+
+    <!-- Theme Toggle Script -->
+    <script>
+        const themeToggleBtn = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+
+        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+            themeIcon.className = 'fas fa-sun text-xl text-yellow-400';
+        } else {
+            document.documentElement.classList.remove('dark');
+            themeIcon.className = 'fas fa-moon text-xl text-gray-700';
+        }
+
+        themeToggleBtn.addEventListener('click', () => {
+            if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+                themeIcon.className = 'fas fa-moon text-xl text-gray-700';
+            } else {
+                document.documentElement.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+                themeIcon.className = 'fas fa-sun text-xl text-yellow-400';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,218 @@
+s<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ScholarPulse360 - Meet the Creators</title>
+    
+    <!-- FAVICON -->
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.png') }}" type="image/png">
+    <link rel="icon" href="{{ url_for('static', filename='favicon.png') }}" type="image/png">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: { 50: '#f0f3ff', 500: '#6366f1', 600: '#4f46e5', 700: '#4338ca' }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 min-h-screen transition-colors duration-300 flex flex-col">
+
+    <!-- Navbar -->
+    <nav class="border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-800 px-6 py-4 flex justify-between items-center shadow-sm">
+        <a href="/" class="flex items-center gap-3 font-black text-2xl tracking-tight text-indigo-600 dark:text-indigo-400">
+            <img src="{{ url_for('static', filename='favicon.png') }}" 
+                 alt="ScholarPulse360 Logo" 
+                 class="w-10 h-10 md:w-12 md:h-12 object-contain rounded-xl shadow-sm"
+                 onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=SP360&background=6366f1&color=fff';">
+            <span class="text-xl md:text-2xl font-bold">ScholarPulse<span class="text-orange-500">360</span></span>
+        </a>
+        
+        <div class="flex items-center gap-4">
+            <a href="/" class="text-sm font-semibold hover:text-indigo-600 dark:hover:text-indigo-400 transition flex items-center gap-2">
+                <i class="fas fa-arrow-left"></i> Dashboard
+            </a>
+            <button id="themeToggle" class="p-2.5 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:scale-105 transition">
+                <i id="themeIcon" class="fas fa-moon"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <main class="max-w-6xl mx-auto px-6 py-12 flex-1 w-full space-y-12">
+        
+        <!-- Header Title -->
+        <div class="text-center space-y-3">
+            <span class="px-4 py-1.5 text-xs font-bold uppercase tracking-wider bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 rounded-full">
+                The Brains Behind ScholarPulse360
+            </span>
+            <h1 class="text-4xl md:text-5xl font-black text-gray-900 dark:text-white">Meet Our Team</h1>
+            <p class="text-gray-600 dark:text-gray-400 max-w-xl mx-auto text-sm md:text-base">
+                Dedicated developers and engineers working together to build an all-in-one scholar productivity platform.
+            </p>
+        </div>
+
+        <!-- Team Leader Section -->
+        <div class="max-w-md mx-auto">
+            <div class="relative bg-gradient-to-br from-indigo-500/10 via-purple-500/10 to-orange-500/10 dark:from-indigo-900/30 dark:to-purple-900/30 border-2 border-indigo-500 rounded-3xl p-6 shadow-lg text-center hover:scale-105 transition duration-300">
+                <span class="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-xs font-bold uppercase tracking-widest rounded-full shadow-md">
+                    <i class="fas fa-crown text-yellow-300 mr-1"></i> Team Leader
+                </span>
+                <div class="mt-2 flex justify-center">
+                    <img src="https://ui-avatars.com/api/?name=Arnav+Singh+Pangtey&background=6366f1&color=fff&size=128" 
+                         alt="Arnav Singh Pangtey" class="w-24 h-24 rounded-full border-4 border-indigo-500/30 shadow-md">
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900 dark:text-white mt-4">Arnav Singh Pangtey</h3>
+                <p class="text-sm font-semibold text-indigo-600 dark:text-indigo-400">Team Leader & SQL Engineer</p>
+                <div class="mt-3 flex justify-center gap-2">
+                    <span class="px-3 py-1 bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 text-xs font-semibold rounded-lg">Leadership</span>
+                    <span class="px-3 py-1 bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 text-xs font-semibold rounded-lg">SQL & Database</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Developers Grid -->
+        <div class="space-y-6">
+            <h2 class="text-2xl font-bold text-center text-gray-900 dark:text-white flex items-center justify-center gap-2">
+                <i class="fas fa-code text-indigo-500"></i> Developers
+            </h2>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                
+                <!-- Aryan Sati -->
+                <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-6 shadow-sm hover:shadow-md transition text-center space-y-3">
+                    <img src="https://ui-avatars.com/api/?name=Aryan+Sati&background=10b981&color=fff" alt="Aryan Sati" class="w-20 h-20 rounded-full mx-auto border-2 border-emerald-500/30">
+                    <h4 class="text-lg font-bold text-gray-900 dark:text-white">Aryan Sati</h4>
+                    <span class="inline-block px-3 py-1 text-xs font-semibold bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-300 rounded-full">
+                        <i class="fab fa-python mr-1"></i> Python Developer
+                    </span>
+                </div>
+
+                <!-- Harshit Joshi -->
+                <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-6 shadow-sm hover:shadow-md transition text-center space-y-3">
+                    <img src="https://ui-avatars.com/api/?name=Harshit+Joshi&background=10b981&color=fff" alt="Harshit Joshi" class="w-20 h-20 rounded-full mx-auto border-2 border-emerald-500/30">
+                    <h4 class="text-lg font-bold text-gray-900 dark:text-white">Harshit Joshi</h4>
+                    <span class="inline-block px-3 py-1 text-xs font-semibold bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-300 rounded-full">
+                        <i class="fab fa-python mr-1"></i> Python Developer
+                    </span>
+                </div>
+
+                <!-- Yuvraj Karki -->
+                <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-6 shadow-sm hover:shadow-md transition text-center space-y-3">
+                    <img src="https://ui-avatars.com/api/?name=Yuvraj+Karki&background=3b82f6&color=fff" alt="Yuvraj Karki" class="w-20 h-20 rounded-full mx-auto border-2 border-blue-500/30">
+                    <h4 class="text-lg font-bold text-gray-900 dark:text-white">Yuvraj Karki</h4>
+                    <span class="inline-block px-3 py-1 text-xs font-semibold bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-300 rounded-full">
+                        <i class="fas fa-database mr-1"></i> SQL Developer
+                    </span>
+                </div>
+
+                <!-- Siddharth Kumar -->
+                <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-6 shadow-sm hover:shadow-md transition text-center space-y-3">
+                    <img src="https://ui-avatars.com/api/?name=Siddharth+Kumar&background=f97316&color=fff" alt="Siddharth Kumar" class="w-20 h-20 rounded-full mx-auto border-2 border-orange-500/30">
+                    <h4 class="text-lg font-bold text-gray-900 dark:text-white">Siddharth Kumar</h4>
+                    <span class="inline-block px-3 py-1 text-xs font-semibold bg-orange-100 dark:bg-orange-900/40 text-orange-600 dark:text-orange-300 rounded-full">
+                        <i class="fab fa-html5 mr-1"></i> HTML & CSS Frontend
+                    </span>
+                </div>
+
+                <!-- Vidushi Amola -->
+                <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-6 shadow-sm hover:shadow-md transition text-center sm:col-span-2 lg:col-span-1 space-y-3">
+                    <img src="https://ui-avatars.com/api/?name=Vidushi+Amola&background=ec4899&color=fff" alt="Vidushi Amola" class="w-20 h-20 rounded-full mx-auto border-2 border-pink-500/30">
+                    <h4 class="text-lg font-bold text-gray-900 dark:text-white">Vidushi Amola</h4>
+                    <span class="inline-block px-3 py-1 text-xs font-semibold bg-pink-100 dark:bg-pink-900/40 text-pink-600 dark:text-pink-300 rounded-full">
+                        <i class="fab fa-css3-alt mr-1"></i> Reviewer
+                    </span>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Tech Stack Section -->
+        <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-3xl p-8 shadow-sm space-y-6 text-center">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white flex items-center justify-center gap-2">
+                <i class="fas fa-layer-group text-indigo-500"></i> Technologies & Tools Used
+            </h2>
+            <p class="text-sm text-gray-500 dark:text-gray-400 max-w-lg mx-auto">
+                Powered by modern Web Frameworks, Cloud Databases, and AI Technology.
+            </p>
+
+            <div class="flex flex-wrap justify-center items-center gap-4 pt-2">
+                
+                <!-- Python -->
+                <div class="flex items-center gap-2 px-4 py-2.5 bg-gray-100 dark:bg-gray-700/60 rounded-2xl text-sm font-semibold text-gray-800 dark:text-gray-200 shadow-sm border border-gray-200 dark:border-gray-600">
+                    <i class="fab fa-python text-xl text-yellow-500"></i> Python
+                </div>
+
+                <!-- Groq AI -->
+                <div class="flex items-center gap-2 px-4 py-2.5 bg-gray-100 dark:bg-gray-700/60 rounded-2xl text-sm font-semibold text-gray-800 dark:text-gray-200 shadow-sm border border-gray-200 dark:border-gray-600">
+                    <i class="fas fa-brain text-xl text-purple-500"></i> Groq AI API
+                </div>
+
+                <!-- Supabase -->
+                <div class="flex items-center gap-2 px-4 py-2.5 bg-gray-100 dark:bg-gray-700/60 rounded-2xl text-sm font-semibold text-gray-800 dark:text-gray-200 shadow-sm border border-gray-200 dark:border-gray-600">
+                    <i class="fas fa-bolt text-xl text-emerald-500"></i> Supabase (SQL & Storage)
+                </div>
+
+                <!-- HTML5 -->
+                <div class="flex items-center gap-2 px-4 py-2.5 bg-gray-100 dark:bg-gray-700/60 rounded-2xl text-sm font-semibold text-gray-800 dark:text-gray-200 shadow-sm border border-gray-200 dark:border-gray-600">
+                    <i class="fab fa-html5 text-xl text-orange-500"></i> HTML5
+                </div>
+
+                <!-- CSS3 & Tailwind -->
+                <div class="flex items-center gap-2 px-4 py-2.5 bg-gray-100 dark:bg-gray-700/60 rounded-2xl text-sm font-semibold text-gray-800 dark:text-gray-200 shadow-sm border border-gray-200 dark:border-gray-600">
+                    <i class="fab fa-css3-alt text-xl text-blue-500"></i> CSS3 & Tailwind
+                </div>
+
+                <!-- JavaScript -->
+                
+
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-800 py-6 text-center text-xs text-gray-500 dark:text-gray-400">
+        &copy; 2026 ScholarPulse360. All Rights Reserved. Built with ❤️ by Team Nexuscore.
+    </footer>
+
+    <!-- Theme Toggle Script -->
+    <script>
+        const themeToggleBtn = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+
+        function applyTheme() {
+            if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+                if (themeIcon) themeIcon.className = 'fas fa-sun text-yellow-400';
+            } else {
+                document.documentElement.classList.remove('dark');
+                if (themeIcon) themeIcon.className = 'fas fa-moon text-gray-700';
+            }
+        }
+        applyTheme();
+
+        if (themeToggleBtn) {
+            themeToggleBtn.addEventListener('click', () => {
+                if (document.documentElement.classList.contains('dark')) {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.setItem('theme', 'light');
+                    if (themeIcon) themeIcon.className = 'fas fa-moon text-gray-700';
+                } else {
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('theme', 'dark');
+                    if (themeIcon) themeIcon.className = 'fas fa-sun text-yellow-400';
+                }
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,1726 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ScholarPulse360 - Executive Student Dashboard</title>
+    
+    <!-- FAVICON -->
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.png') }}" type="image/x-icon">
+    
+    <!-- TAILWIND CSS & FONT AWESOME -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            900: '#312e81',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .dark ::-webkit-scrollbar-thumb { background: #475569; }
+        .modal-active { animation: expandModal 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes expandModal {
+            0% { opacity: 0; transform: scale(0.95); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 min-h-screen flex flex-col justify-between font-sans transition-colors duration-300">
+
+    <!-- TOP NAVIGATION BAR -->
+    <nav class="sticky top-0 z-40 border-b border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md px-4 sm:px-6 py-3.5 flex justify-between items-center shadow-sm">
+        <div class="flex items-center gap-4 sm:gap-6">
+            <a href="/" class="flex items-center gap-3 font-black text-2xl tracking-tight text-indigo-600 dark:text-indigo-400">
+                <img src="{{ url_for('static', filename='logo.png') }}" 
+                     alt="ScholarPulse360 Logo" 
+                     class="w-12 h-12 md:w-14 md:h-14 object-contain rounded-xl shadow-sm" 
+                     onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=SP360&background=6366f1&color=fff';">
+                <span class="text-2xl md:text-3xl font-bold">ScholarPulse<span class="text-orange-500">360</span></span>
+            </a>
+        </div>
+
+        <div class="flex items-center gap-4">
+            <div class="hidden lg:flex items-center gap-2 text-sm font-semibold text-gray-600 dark:text-gray-300">
+                <button onclick="openWidgetModal('squadModal')" class="px-3 py-2 rounded-lg bg-purple-50 dark:bg-purple-900/40 text-purple-600 dark:text-purple-300 hover:bg-purple-100 transition flex items-center gap-1.5 cursor-pointer">
+                    <i class="fas fa-users-cog"></i> Private Squad 🔑
+                </button>
+            </div>
+
+            <div class="h-6 w-px bg-gray-300 dark:bg-gray-700 hidden lg:block"></div>
+
+            <!-- Theme Toggle -->
+            <button id="themeToggle" aria-label="Toggle Theme" class="p-2.5 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:scale-105 active:scale-95 transition cursor-pointer">
+                <i id="themeIcon" class="fas fa-moon"></i>
+            </button>
+
+            <!-- User Session -->
+            {% if user %}
+                <a href="/profile" class="flex items-center gap-3 p-1 pl-2.5 bg-gray-100 dark:bg-gray-700/80 rounded-xl hover:ring-2 hover:ring-indigo-500 transition">
+                    <span class="text-xs font-bold text-gray-700 dark:text-gray-200 hidden sm:inline">{{ user.name.split()[0] if user.name else 'User' }}</span>
+                    <img src="{{ user.avatar_url if user.avatar_url else 'https://ui-avatars.com/api/?name=' + (user.name if user.name else 'User') + '&background=6366f1&color=fff' }}" 
+                         alt="Avatar" class="w-8 h-8 rounded-lg object-cover shadow-sm">
+                </a>
+            {% else %}
+                <div class="flex items-center gap-2">
+                    <a href="/login" class="text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-indigo-600 transition px-2 py-1">Login</a>
+                    <a href="/signup" class="px-4 py-2 text-sm font-semibold bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-md transition">Sign Up</a>
+                </div>
+            {% endif %}
+
+            <button id="mobileMenuBtn" aria-label="Toggle Menu" class="lg:hidden p-2 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200">
+                <i class="fas fa-bars text-lg"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- MOBILE MENU -->
+    <div id="mobileMenu" class="hidden lg:hidden bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 space-y-3 shadow-md">
+        <button onclick="openWidgetModal('squadModal')" class="w-full text-left py-2 text-sm font-semibold text-purple-600 dark:text-purple-400">Private Squad 🔑</button>
+    </div>
+
+    <!-- MAIN DASHBOARD CONTENT -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-8 flex-1 w-full">
+
+        <!-- HERO BANNER -->
+        <div class="relative overflow-hidden bg-gradient-to-r from-indigo-700 via-indigo-600 to-purple-700 rounded-3xl p-6 sm:p-8 text-white shadow-2xl border border-indigo-500/30">
+            <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-white/10 rounded-full blur-3xl pointer-events-none"></div>
+            
+            <div class="relative z-10 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6">
+                <div class="space-y-2 max-w-2xl">
+                    {% if user %}
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 backdrop-blur-md text-xs font-semibold text-indigo-100 border border-white/20">
+                            <i class="fas fa-crown text-yellow-300"></i> Active Scholar
+                        </div>
+                        <h1 class="text-3xl sm:text-4xl font-black tracking-tight">Welcome back, {{ user.name }}! 🚀</h1>
+                        <p class="text-indigo-100 text-sm leading-relaxed">Your daily productivity engine is active. Complete your targets to earn Aura!</p>
+                    {% else %}
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 backdrop-blur-md text-xs font-semibold text-indigo-100 border border-white/20">
+                            <i class="fas fa-lock text-amber-300"></i> Login Required System
+                        </div>
+                        <h1 class="text-3xl sm:text-4xl font-black tracking-tight">Elevate Your Academics & Aura</h1>
+                        <p class="text-indigo-100 text-sm leading-relaxed">Please log in to track goals, check leaderboards, and view public activity streams.</p>
+                    {% endif %}
+                    
+                    <div class="pt-2">
+                        <p id="quoteDisplay" class="text-xs italic text-indigo-200 bg-black/10 px-3 py-1.5 rounded-lg inline-block">"Success is the sum of small efforts repeated day in and day out."</p>
+                    </div>
+                </div>
+
+                {% if user %}
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 w-full bg-black/20 backdrop-blur-md p-3 sm:p-4 rounded-2xl border border-white/10">
+                        <div class="bg-white/10 backdrop-blur-md rounded-xl p-3 shadow-sm flex flex-col items-center justify-center text-center overflow-hidden">
+                            <span class="text-[10px] sm:text-xs uppercase font-bold text-indigo-200 tracking-wider truncate w-full">Aura Tag</span>
+                            <span id="userHeroTag" class="text-xs font-black text-yellow-300 block mt-1 w-full truncate">Calculating...</span>
+                        </div>
+                        <div class="bg-white/10 backdrop-blur-md rounded-xl p-3 shadow-sm flex flex-col items-center justify-center text-center overflow-hidden">
+                            <span class="text-[10px] sm:text-xs uppercase font-bold text-indigo-200 tracking-wider truncate w-full">Scholar XP</span>
+                            <span id="userHeroXP" class="text-sm sm:text-base font-black text-amber-300 block mt-1 w-full truncate">0 XP</span>
+                        </div>
+                        <div class="bg-white/10 backdrop-blur-md rounded-xl p-3 shadow-sm flex flex-col items-center justify-center text-center overflow-hidden">
+                            <span class="text-[10px] sm:text-xs uppercase font-bold text-indigo-200 tracking-wider truncate w-full">Scholar Rank</span>
+                            <span id="userHeroRank" class="text-sm sm:text-base font-black text-purple-300 block mt-1 w-full truncate">Beginner</span>
+                        </div>
+                        <div class="bg-white/10 backdrop-blur-md rounded-xl p-3 shadow-sm flex flex-col items-center justify-center text-center overflow-hidden">
+                            <span class="text-[10px] sm:text-xs uppercase font-bold text-indigo-200 tracking-wider truncate w-full">Active Streak</span>
+                            <span id="userHeroStreak" class="text-sm sm:text-base font-black text-orange-400 block mt-1 w-full truncate">0 Days</span>
+                        </div>
+                        <div class="bg-white/10 backdrop-blur-md rounded-xl p-3 shadow-sm flex flex-col items-center justify-center text-center overflow-hidden">
+                            <span class="text-[10px] sm:text-xs uppercase font-bold text-indigo-200 tracking-wider truncate w-full">Goals Done</span>
+                            <span id="userHeroGoals" class="text-sm sm:text-base font-black text-emerald-400 block mt-1 w-full truncate">0%</span>
+                        </div>
+                        <div class="bg-white/10 backdrop-blur-md rounded-xl p-3 shadow-sm flex flex-col items-center justify-center text-center overflow-hidden">
+                            <span class="text-[10px] sm:text-xs uppercase font-bold text-indigo-200 tracking-wider truncate w-full">Water Intake</span>
+                            <span id="userHeroWater" class="text-sm sm:text-base font-black text-cyan-400 block mt-1 w-full truncate">0 L</span>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="flex gap-3">
+                        <a href="/login" class="px-6 py-3 bg-white text-indigo-700 font-bold text-sm rounded-xl hover:bg-indigo-50 shadow-lg transition">Log In Now</a>
+                        <a href="/signup" class="px-6 py-3 bg-indigo-800/60 hover:bg-indigo-800/80 text-white font-bold text-sm rounded-xl border border-white/20 transition">Create Account</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- 5 WIDGETS GRID -->
+        <div class="relative">
+            {% if not user %}
+                <div class="absolute inset-0 z-20 backdrop-blur-md bg-white/40 dark:bg-gray-900/40 rounded-3xl flex flex-col items-center justify-center p-6 text-center border border-gray-200/50 dark:border-gray-700/50">
+                    <div class="w-16 h-16 bg-indigo-600 text-white rounded-2xl flex items-center justify-center text-2xl shadow-xl shadow-indigo-500/30 mb-4 animate-bounce">
+                        <i class="fas fa-user-lock"></i>
+                    </div>
+                    <h3 class="text-2xl font-black text-gray-900 dark:text-white mb-2">Login Required to Access Dashboard Tools</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-300 max-w-md mb-6">Please log in to access dashboard tools and track your productivity.</p>
+                    <div class="flex gap-4">
+                        <a href="/login" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm rounded-xl shadow-lg transition">Log In</a>
+                        <a href="/signup" class="px-6 py-3 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 text-gray-800 dark:text-white font-bold text-sm rounded-xl transition">Sign Up</a>
+                    </div>
+                </div>
+            {% endif %}
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 {% if not user %}filter blur-sm select-none pointer-events-none{% endif %}">
+
+                <!-- 1. FOCUS TIMER WIDGET -->
+                <div onclick="openWidgetModal('pomoModal')" class="bg-white dark:bg-gray-800 p-6 rounded-3xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-xl hover:border-indigo-500/50 cursor-pointer transition-all duration-300 flex flex-col justify-between group relative overflow-hidden">
+                    <div class="absolute top-3 right-3 text-gray-300 group-hover:text-indigo-500 transition"><i class="fas fa-expand-alt text-sm"></i></div>
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="flex items-center gap-2 font-bold text-sm text-indigo-600 dark:text-indigo-400">
+                                <i class="fas fa-stopwatch text-lg"></i> Focus Timer
+                            </span>
+                        </div>
+                        <div class="my-4 text-center">
+                            <div class="pomoDisplay text-4xl font-black tracking-tight text-gray-900 dark:text-white font-mono">25:00</div>
+                            <p class="pomoStatus text-xs text-gray-500 dark:text-gray-400 mt-2 font-medium">Ready to focus?</p>
+                        </div>
+                    </div>
+                    <div class="mt-2 text-center text-xs font-semibold text-indigo-600 dark:text-indigo-400">Click to expand →</div>
+                </div>
+
+                <!-- 2. TODAY'S TARGETS WIDGET -->
+                <div onclick="openWidgetModal('taskModal')" class="bg-white dark:bg-gray-800 p-6 rounded-3xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-xl hover:border-emerald-500/50 cursor-pointer transition-all duration-300 flex flex-col justify-between group relative overflow-hidden">
+                    <div class="absolute top-3 right-3 text-gray-300 group-hover:text-emerald-500 transition"><i class="fas fa-expand-alt text-sm"></i></div>
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="flex items-center gap-2 font-bold text-sm text-emerald-600 dark:text-emerald-400">
+                                <i class="fas fa-tasks text-lg"></i> Today's Targets
+                            </span>
+                            <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400 taskCount">0/0 done</span>
+                        </div>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 my-4 text-center">Manage daily priorities to boost Aura tag.</p>
+                    </div>
+                    <div class="mt-2 text-center text-xs font-semibold text-emerald-600 dark:text-emerald-400">Click to expand →</div>
+                </div>
+
+                <!-- 3. WATER TRACKER WIDGET -->
+                <div onclick="handleWaterWidgetClick()" class="bg-white dark:bg-gray-800 p-6 rounded-3xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-xl hover:border-cyan-500/50 cursor-pointer transition-all duration-300 flex flex-col justify-between group relative overflow-hidden">
+                    <div class="absolute top-3 right-3 text-gray-300 group-hover:text-cyan-500 transition"><i class="fas fa-expand-alt text-sm"></i></div>
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="flex items-center gap-2 font-bold text-sm text-cyan-600 dark:text-cyan-400">
+                                <i class="fas fa-glass-water text-lg"></i> Water Tracker
+                            </span>
+                            <span class="text-xs font-bold text-cyan-600 dark:text-cyan-400 waterVal">0 / 0 L</span>
+                        </div>
+                        <div class="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-3 my-4 overflow-hidden">
+                            <div class="waterBar bg-cyan-500 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="mt-2 text-center text-xs font-semibold text-cyan-600 dark:text-cyan-400">Click to expand →</div>
+                </div>
+
+                <!-- 4. SCRATCHPAD WIDGET -->
+                <div onclick="openWidgetModal('scratchModal')" class="bg-white dark:bg-gray-800 p-6 rounded-3xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-xl hover:border-amber-500/50 cursor-pointer transition-all duration-300 flex flex-col justify-between group relative overflow-hidden">
+                    <div class="absolute top-3 right-3 text-gray-300 group-hover:text-amber-500 transition"><i class="fas fa-expand-alt text-sm"></i></div>
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="flex items-center gap-2 font-bold text-sm text-amber-500">
+                                <i class="fas fa-sticky-note text-lg"></i> Scratchpad
+                            </span>
+                        </div>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 my-4 text-center">Quick ideas, formulas, and rough notes autosaved.</p>
+                    </div>
+                    <div class="mt-2 text-center text-xs font-semibold text-amber-500">Click to expand →</div>
+                </div>
+
+                <!-- 5. LEADERBOARD WIDGET -->
+                <div onclick="openWidgetModal('leaderboardModal')" class="bg-white dark:bg-gray-800 p-6 rounded-3xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-xl hover:border-yellow-500/50 cursor-pointer transition-all duration-300 flex flex-col justify-between group relative overflow-hidden">
+                    <div class="absolute top-3 right-3 text-gray-300 group-hover:text-yellow-500 transition"><i class="fas fa-expand-alt text-sm"></i></div>
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="flex items-center gap-2 font-bold text-sm text-yellow-600 dark:text-yellow-400">
+                                <i class="fas fa-trophy text-lg"></i> Aura Leaderboard
+                            </span>
+                        </div>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 my-4 text-center">Check state rankings and tier tags.</p>
+                    </div>
+                    <div class="mt-2 text-center text-xs font-semibold text-yellow-600 dark:text-yellow-400">Click to expand widget →</div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- CORE PULSE SUITES -->
+        <div class="space-y-4 pt-4">
+            <h2 class="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                <i class="fas fa-compass text-indigo-500"></i> Core Pulse Suites
+            </h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+                <!-- 1. Fitness Hub -->
+                <a href="{% if user %}/fitness{% else %}/login{% endif %}" class="group bg-white dark:bg-gray-800 p-6 rounded-3xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-xl hover:border-emerald-500/50 transition-all duration-300 flex flex-col justify-between">
+                    <div>
+                        <div class="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 rounded-2xl flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition duration-300">
+                            <i class="fas fa-running"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Fitness Hub</h3>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">Track workouts, set daily step goals, monitor calories, and keep healthy routines.</p>
+                    </div>
+
+                    <div class="mt-6 flex items-center justify-between text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                        <span>{% if user %}Launch Workspace{% else %}Login to Access{% endif %}</span>
+                        <i class="fas fa-arrow-right group-hover:translate-x-1.5 transition"></i>
+                    </div>
+                </a>
+
+                <!-- 2. Study Zone -->
+                <a href="{% if user %}/study{% else %}/login{% endif %}" class="group bg-white dark:bg-gray-800 p-6 rounded-3xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-xl hover:border-indigo-500/50 transition-all duration-300 flex flex-col justify-between">
+                    <div>
+                        <div class="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 rounded-2xl flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition duration-300">
+                            <i class="fas fa-book-open"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Study Zone</h3>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">Pomodoro workflows, AI note summaries, syllabus planners, and revision decks.</p>
+                    </div>
+
+                    <div class="mt-6 flex items-center justify-between text-xs font-bold text-indigo-600 dark:text-indigo-400">
+                        <span>{% if user %}Launch Workspace{% else %}Login to Access{% endif %}</span>
+                        <i class="fas fa-arrow-right group-hover:translate-x-1.5 transition"></i>
+                    </div>
+                </a>
+
+                <!-- 3. Opportunities -->
+                <a href="{% if user %}/opportunities{% else %}/login{% endif %}" class="group bg-white dark:bg-gray-800 p-6 rounded-3xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-xl hover:border-purple-500/50 transition-all duration-300 flex flex-col justify-between">
+                    <div>
+                        <div class="w-12 h-12 bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400 rounded-2xl flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition duration-300">
+                            <i class="fas fa-briefcase"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Opportunities</h3>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">Discover hackathons, internships, scholarships, and active coding contests.</p>
+                    </div>
+
+                    <div class="mt-6 flex items-center justify-between text-xs font-bold text-purple-600 dark:text-purple-400">
+                        <span>{% if user %}Launch Workspace{% else %}Login to Access{% endif %}</span>
+                        <i class="fas fa-arrow-right group-hover:translate-x-1.5 transition"></i>
+                    </div>
+                </a>
+
+            </div>
+        </div>
+
+    </main>
+
+    <!-- MODALS -->
+
+    <!-- POMODORO MODAL -->
+    <div id="pomoModal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-md hidden items-center justify-center p-4 md:p-8">
+        <div class="bg-white dark:bg-gray-800 rounded-3xl w-[92vw] h-[88vh] max-w-none p-8 md:p-12 shadow-2xl border border-gray-200 dark:border-gray-700 relative flex flex-col justify-between modal-active">
+            <button onclick="closeWidgetModal('pomoModal')" class="absolute top-6 right-6 w-12 h-12 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 rounded-full flex items-center justify-center text-gray-600 dark:text-gray-200 font-bold text-xl transition"><i class="fas fa-times"></i></button>
+            <div class="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 pb-4">
+                <span class="inline-flex items-center gap-3 font-bold text-2xl text-indigo-600 dark:text-indigo-400">
+                    <i class="fas fa-stopwatch text-3xl"></i> Pomodoro Focus Workspace
+                </span>
+            </div>
+            
+            <div class="text-center my-auto space-y-6">
+                <div class="flex items-center justify-center gap-3 mb-2">
+                    <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Adjust Timer:</span>
+                    <button onclick="adjustTime(-300)" class="px-4 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 text-xs font-bold rounded-xl transition">-5m</button>
+                    <button onclick="adjustTime(-60)" class="px-4 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 text-xs font-bold rounded-xl transition">-1m</button>
+                    <button onclick="adjustTime(60)" class="px-4 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 text-xs font-bold rounded-xl transition">+1m</button>
+                    <button onclick="adjustTime(300)" class="px-4 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 text-xs font-bold rounded-xl transition">+5m</button>
+                </div>
+
+                <div class="pomoDisplay text-8xl md:text-[10rem] font-black text-gray-900 dark:text-white font-mono tracking-wider">25:00</div>
+                <p class="pomoStatus text-xl md:text-2xl text-gray-500 dark:text-gray-400 font-medium">Ready to focus?</p>
+                
+                <div class="flex items-center justify-center gap-6 pt-2">
+                    <button id="pomoStartBtn" onclick="togglePomodoro()" class="px-10 py-5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xl rounded-2xl shadow-2xl transition-all scale-105 active:scale-95">Start Session</button>
+                    <button onclick="resetPomodoro()" class="px-8 py-5 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 text-gray-700 dark:text-gray-200 font-bold text-xl rounded-2xl transition">Reset</button>
+                </div>
+            </div>
+            <div class="text-center text-xs text-gray-400">Press ESC or click X to minimize workspace</div>
+        </div>
+    </div>
+
+    <!-- TASK MODAL -->
+    <div id="taskModal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-md hidden items-center justify-center p-4 md:p-8">
+        <div class="bg-white dark:bg-gray-800 rounded-3xl w-[92vw] h-[88vh] max-w-none p-8 md:p-10 shadow-2xl border border-gray-200 dark:border-gray-700 relative flex flex-col justify-between modal-active">
+            <button onclick="closeWidgetModal('taskModal')" class="absolute top-6 right-6 w-12 h-12 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 rounded-full flex items-center justify-center text-gray-600 dark:text-gray-200 font-bold text-xl transition"><i class="fas fa-times"></i></button>
+            <div class="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 pb-4">
+                <span class="font-bold text-2xl text-emerald-600 dark:text-emerald-400 flex items-center gap-3"><i class="fas fa-tasks text-3xl"></i> Daily Target Manager</span>
+                <span class="text-base font-bold text-gray-400 mr-12 taskCount">0/0 done</span>
+            </div>
+            <div class="my-6 space-y-6 flex-1 flex flex-col overflow-hidden">
+                <form onsubmit="addTask(event)" class="flex gap-3">
+                    <input type="text" id="taskInput" placeholder="Add a new target or goal for today..." class="flex-1 px-6 py-4 rounded-2xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-base focus:outline-none focus:ring-2 focus:ring-emerald-500 text-gray-800 dark:text-gray-100">
+                    <button id="addTaskBtn" type="submit" class="px-8 py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-lg rounded-2xl transition shadow-lg cursor-pointer flex items-center justify-center" title="Add Target">+</button>
+                </form>
+                <ul id="taskList" class="space-y-3 flex-1 overflow-y-auto pr-2"></ul>
+            </div>
+            <div class="text-center text-xs text-gray-400 pt-2 border-t border-gray-200 dark:border-gray-700">Auto-saved for your account and synchronizes with your Aura score</div>
+        </div>
+    </div>
+
+    <!-- WATER MODAL -->
+    <div id="waterModal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-md hidden items-center justify-center p-4 md:p-8">
+        <div class="bg-white dark:bg-gray-800 rounded-3xl w-[92vw] h-[88vh] max-w-none p-8 md:p-12 shadow-2xl border border-gray-200 dark:border-gray-700 relative flex flex-col justify-between modal-active">
+            <button onclick="closeWidgetModal('waterModal')" class="absolute top-6 right-6 w-12 h-12 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 rounded-full flex items-center justify-center text-gray-600 dark:text-gray-200 font-bold text-xl transition"><i class="fas fa-times"></i></button>
+            <div class="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 pb-4">
+                <span class="font-bold text-2xl text-cyan-600 dark:text-cyan-400 flex items-center gap-3"><i class="fas fa-glass-water text-3xl"></i> Hydration & Water Engine</span>
+            </div>
+            <div class="text-center my-auto space-y-10 max-w-4xl mx-auto w-full">
+                <div class="text-6xl md:text-8xl font-black text-cyan-600 dark:text-cyan-400 waterVal">0 / 0 L</div>
+                <div class="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-8 overflow-hidden p-1 border border-cyan-500/20">
+                    <div class="waterBar bg-cyan-500 h-full rounded-full transition-all duration-500 shadow-md" style="width: 0%"></div>
+                </div>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-2xl mx-auto pt-4">
+                    <button onclick="addWater(-0.25)" class="py-4 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-300 font-bold text-lg rounded-2xl hover:bg-red-100 transition border border-red-200 dark:border-red-800 cursor-pointer">-250 ml</button>
+                    <button onclick="addWater(-0.5)" class="py-4 bg-red-600 hover:bg-red-700 text-white font-bold text-lg rounded-2xl transition shadow-md cursor-pointer">-500 ml</button>
+                    <button onclick="addWater(0.25)" class="py-4 bg-cyan-50 dark:bg-cyan-900/40 text-cyan-600 dark:text-cyan-300 font-bold text-lg rounded-2xl hover:bg-cyan-100 transition border border-cyan-200 dark:border-cyan-800 cursor-pointer">+250 ml</button>
+                    <button onclick="addWater(0.5)" class="py-4 bg-cyan-600 hover:bg-cyan-700 text-white font-bold text-lg rounded-2xl transition shadow-xl cursor-pointer">+500 ml</button>
+                </div>
+            </div>
+            <div class="text-center text-xs text-gray-400">Maintain daily target calculated from your profile to earn Aura</div>
+        </div>
+    </div>
+
+    <!-- WATER CRITERIA REQUIRED MODAL -->
+    <div id="waterCriteriaModal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-md hidden items-center justify-center p-4 md:p-8">
+        <div class="bg-white dark:bg-gray-800 rounded-3xl w-full max-w-lg p-6 sm:p-8 shadow-2xl border border-gray-200 dark:border-gray-700 relative text-center space-y-6 modal-active">
+            <button onclick="closeWidgetModal('waterCriteriaModal')" class="absolute top-4 right-4 w-10 h-10 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-full flex items-center justify-center text-gray-600 dark:text-gray-200 font-bold transition"><i class="fas fa-times"></i></button>
+            <div class="w-16 h-16 bg-cyan-100 dark:bg-cyan-900/40 text-cyan-600 dark:text-cyan-400 rounded-2xl flex items-center justify-center text-3xl mx-auto shadow-sm">
+                <i class="fas fa-glass-water-droplet"></i>
+            </div>
+            <div class="space-y-2">
+                <h3 class="text-xl font-bold text-gray-900 dark:text-white">Water Intake Criteria Required</h3>
+                <p class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+                    Please complete your Water Intake Criteria in your Profile first. Add your weight, activity level, and local climate to calculate your personalized daily water target.
+                </p>
+            </div>
+            <div class="flex justify-center gap-3 pt-2">
+                <button onclick="closeWidgetModal('waterCriteriaModal')" class="px-5 py-2.5 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 text-sm font-bold rounded-xl transition">Cancel</button>
+                <a href="/profile" class="px-6 py-2.5 bg-cyan-600 hover:bg-cyan-700 text-white text-sm font-bold rounded-xl shadow-lg transition flex items-center gap-2">
+                    <i class="fas fa-user-edit"></i> Go to Profile
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRATCHPAD MODAL -->
+    <div id="scratchModal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-md hidden items-center justify-center p-4 md:p-8">
+        <div class="bg-white dark:bg-gray-800 rounded-3xl w-[92vw] h-[88vh] max-w-none p-8 md:p-10 shadow-2xl border border-gray-200 dark:border-gray-700 relative flex flex-col justify-between modal-active">
+            <button onclick="closeWidgetModal('scratchModal')" class="absolute top-6 right-6 w-12 h-12 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 rounded-full flex items-center justify-center text-gray-600 dark:text-gray-200 font-bold text-xl transition"><i class="fas fa-times"></i></button>
+            <div class="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 pb-4">
+                <span class="font-bold text-2xl text-amber-500 flex items-center gap-3"><i class="fas fa-sticky-note text-3xl"></i> Expanded Scratchpad</span>
+            </div>
+            <div class="my-6 flex-1 flex flex-col">
+                <textarea id="scratchpad" oninput="saveScratchpadDebounced()" placeholder="Write down quick thoughts, lecture notes, complex formulas, or code snippets here..." class="w-full flex-1 p-6 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 text-base md:text-lg focus:outline-none focus:ring-2 focus:ring-amber-500 resize-none leading-relaxed font-mono text-gray-800 dark:text-gray-100"></textarea>
+            </div>
+            <div class="flex justify-between items-center pt-2 border-t border-gray-200 dark:border-gray-700">
+                <span class="text-xs text-gray-400">Notes are automatically saved to your account.</span>
+                <button onclick="clearScratchpad()" class="text-sm font-semibold text-red-500 hover:underline cursor-pointer"><i class="fas fa-trash-alt mr-1"></i> Clear Notes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- LEADERBOARD MODAL -->
+    <div id="leaderboardModal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-md hidden items-center justify-center p-4 md:p-8">
+        <div class="bg-white dark:bg-gray-800 rounded-3xl w-[92vw] h-[88vh] max-w-none p-8 md:p-10 shadow-2xl border border-gray-200 dark:border-gray-700 relative flex flex-col justify-between modal-active">
+            <button onclick="closeWidgetModal('leaderboardModal')" class="absolute top-6 right-6 w-12 h-12 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 rounded-full flex items-center justify-center text-gray-600 dark:text-gray-200 font-bold text-xl transition"><i class="fas fa-times"></i></button>
+            
+            <div class="flex flex-col md:flex-row items-start md:items-center justify-between border-b border-gray-200 dark:border-gray-700 pb-4 gap-4">
+                <span class="font-bold text-2xl text-yellow-500 flex items-center gap-3"><i class="fas fa-trophy text-3xl"></i> Aura Leaderboard & Rankings</span>
+                
+                <div class="flex flex-wrap items-center gap-2.5 sm:gap-3 mr-10 sm:mr-12">
+                    <div class="flex items-center gap-1.5">
+                        <label for="stateFilterSelect" class="text-xs font-bold text-gray-500 dark:text-gray-400">State:</label>
+                        <select id="stateFilterSelect" onchange="renderLeaderboard()" class="px-2.5 py-1.5 text-xs font-semibold rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer">
+                            <option value="ALL">All Indian States</option>
+                            <option value="Andhra Pradesh">Andhra Pradesh</option>
+                            <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+                            <option value="Assam">Assam</option>
+                            <option value="Bihar">Bihar</option>
+                            <option value="Chhattisgarh">Chhattisgarh</option>
+                            <option value="Goa">Goa</option>
+                            <option value="Gujarat">Gujarat</option>
+                            <option value="Haryana">Haryana</option>
+                            <option value="Himachal Pradesh">Himachal Pradesh</option>
+                            <option value="Jharkhand">Jharkhand</option>
+                            <option value="Karnataka">Karnataka</option>
+                            <option value="Kerala">Kerala</option>
+                            <option value="Madhya Pradesh">Madhya Pradesh</option>
+                            <option value="Maharashtra">Maharashtra</option>
+                            <option value="Manipur">Manipur</option>
+                            <option value="Meghalaya">Meghalaya</option>
+                            <option value="Mizoram">Mizoram</option>
+                            <option value="Nagaland">Nagaland</option>
+                            <option value="Odisha">Odisha</option>
+                            <option value="Punjab">Punjab</option>
+                            <option value="Rajasthan">Rajasthan</option>
+                            <option value="Sikkim">Sikkim</option>
+                            <option value="Tamil Nadu">Tamil Nadu</option>
+                            <option value="Telangana">Telangana</option>
+                            <option value="Tripura">Tripura</option>
+                            <option value="Uttar Pradesh">Uttar Pradesh</option>
+                            <option value="Uttarakhand">Uttarakhand</option>
+                            <option value="West Bengal">West Bengal</option>
+                        </select>
+                    </div>
+
+                    <div class="flex items-center gap-1.5">
+                        <label for="tagFilterSelect" class="text-xs font-bold text-gray-500 dark:text-gray-400">Tag:</label>
+                        <select id="tagFilterSelect" onchange="renderLeaderboard()" class="px-2.5 py-1.5 text-xs font-semibold rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer">
+                            <option value="ALL">All Tags</option>
+                            <option value="PLUS_AURA">+999 Aura 👑</option>
+                            <option value="CHAD">Chad ⚡</option>
+                            <option value="MINUS_AURA">-999 Aura 🔴</option>
+                        </select>
+                    </div>
+
+                    <button id="myPositionBtn" onclick="scrollToMyPosition()" class="px-3 py-1.5 bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-bold text-xs rounded-xl shadow transition flex items-center gap-1.5 cursor-pointer">
+                        <i class="fas fa-crosshairs"></i> My Position
+                    </button>
+                </div>
+            </div>
+
+            <div class="my-6 flex-1 flex flex-col overflow-hidden space-y-4">
+                <div class="text-xs text-gray-400 font-semibold uppercase tracking-wider flex justify-between px-4">
+                    <span>Rank & Scholar</span>
+                    <span>Aura Tier Tag</span>
+                </div>
+                <div id="leaderboardList" class="divide-y divide-gray-100 dark:divide-gray-700/60 space-y-2 overflow-y-auto flex-1 pr-2"></div>
+            </div>
+            
+            <div class="pt-4 border-t border-gray-200 dark:border-gray-700 flex flex-wrap items-center justify-between gap-4 text-xs">
+                <span class="font-bold text-indigo-700 dark:text-indigo-300"><i class="fas fa-info-circle"></i> Aura Rules: &lt;50% (-999 Aura 🔴) | 50-80% (Chad ⚡) | 80%+ (+999 Aura 👑)</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- PRIVATE SQUAD MODAL -->
+    <div id="squadModal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-md hidden items-center justify-center p-4 md:p-8">
+        <div class="bg-white dark:bg-gray-800 rounded-3xl w-[92vw] h-[88vh] max-w-none p-8 md:p-10 shadow-2xl border border-gray-200 dark:border-gray-700 relative flex flex-col justify-between modal-active">
+            <button onclick="closeWidgetModal('squadModal')" class="absolute top-6 right-6 w-12 h-12 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 rounded-full flex items-center justify-center text-gray-600 dark:text-gray-200 font-bold text-xl transition"><i class="fas fa-times"></i></button>
+            <div class="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 pb-4">
+                <span class="font-bold text-2xl text-purple-600 dark:text-purple-400 flex items-center gap-3"><i class="fas fa-users-cog text-3xl"></i> Private Squad Room</span>
+            </div>
+            
+            <div class="my-6 flex-1 overflow-y-auto space-y-6 pr-2">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-purple-50 dark:bg-purple-900/20 p-6 rounded-2xl border border-purple-200 dark:border-purple-800">
+                    <div class="space-y-3">
+                        <h4 class="font-bold text-purple-700 dark:text-purple-300">Create New Squad Room</h4>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Generate a secret code to share with your friends.</p>
+                        <button onclick="generateSquadCode()" class="px-5 py-3 bg-purple-600 hover:bg-purple-700 text-white font-bold text-sm rounded-xl transition shadow-md cursor-pointer">Generate Code</button>
+                        <div id="generatedCodeBox" class="hidden text-sm font-mono font-bold text-purple-800 dark:text-purple-200 bg-white dark:bg-gray-800 p-3 rounded-xl border border-purple-300 flex items-center justify-between">
+                            <span>Code: <span id="squadCodeText" class="text-indigo-600 font-black">---</span></span>
+                            <button onclick="copySquadCode()" class="px-3 py-1 bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300 rounded-lg hover:bg-purple-200 transition text-xs font-sans flex items-center gap-1 cursor-pointer">
+                                <i class="fas fa-copy"></i> <span id="copyBtnText">Copy</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="space-y-3">
+                        <h4 class="font-bold text-purple-700 dark:text-purple-300">Join Friend's Squad Code</h4>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Enter the secret code provided by your friend here.</p>
+                        <div class="flex gap-2">
+                            <input type="text" id="joinCodeInput" placeholder="Enter Squad Code..." class="flex-1 px-4 py-3 rounded-xl border border-purple-300 bg-white dark:bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-800 dark:text-gray-100 uppercase">
+                            <button onclick="joinSquad()" class="px-5 py-3 bg-gray-900 dark:bg-gray-700 hover:bg-black text-white font-bold text-sm rounded-xl transition cursor-pointer">Join</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between">
+                        <h4 class="font-bold text-base text-gray-900 dark:text-white flex items-center gap-2">
+                            <i class="fas fa-trophy text-yellow-500"></i> Active Squad Leaderboard (<span id="activeSquadName">No Active Squad</span>)
+                        </h4>
+                        <button id="leaveSquadBtn" onclick="leaveSquad()" class="hidden px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white font-bold text-xs rounded-xl shadow transition flex items-center gap-1.5 cursor-pointer">
+                            <i class="fas fa-sign-out-alt"></i> Leave Squad
+                        </button>
+                    </div>
+                    <div class="text-xs text-gray-400">Private competition among your squad members:</div>
+                    <div id="squadLeaderboardList" class="divide-y divide-gray-100 dark:divide-gray-700/60 bg-gray-50 dark:bg-gray-900/40 p-4 rounded-2xl border border-gray-200 dark:border-gray-700"></div>
+                </div>
+            </div>
+
+            <div class="text-center text-xs text-gray-400 pt-2 border-t border-gray-200 dark:border-gray-700">Share your squad code with up to 7 friends for private competition</div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-800 py-6 px-6 text-center text-xs text-gray-500 dark:text-gray-400">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
+            <p>ScholarPulse360 Suite © 2026. Built for ambitious students.</p>
+            <div class="flex gap-4">
+                <a href="/creator.html" class="hover:underline font-semibold text-indigo-600 dark:text-indigo-400">Creator's Info</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- SERVER CONTEXT JSON INJECTION -->
+    <script id="userData" type="application/json">
+    {% if user %}
+    {
+        "id": {{ (user.id if (user.id is defined and user.id is not none) else (user.user_id if (user.user_id is defined and user.user_id is not none) else (user.email if (user.email is defined and user.email is not none) else ('user_' + user.name if (user.name is defined and user.name is not none) else '')))) | tojson }},
+        "name": {{ (user.name if (user.name is defined and user.name is not none) else '') | tojson }},
+        "state": {{ (user.state if (user.state is defined and user.state is not none) else '') | tojson }},
+        "weight": {{ (user.weight if (user.weight is defined and user.weight is not none) else '') | tojson }},
+        "activityLevel": {{ (user.activity_level if (user.activity_level is defined and user.activity_level is not none) else (user.activityLevel if (user.activityLevel is defined and user.activityLevel is not none) else '')) | tojson }},
+        "climate": {{ (user.climate if (user.climate is defined and user.climate is not none) else (user.local_climate if (user.local_climate is defined and user.local_climate is not none) else '')) | tojson }},
+        "targetWater": {{ (user.target_water if (user.target_water is defined and user.target_water is not none) else (user.water_target if (user.water_target is defined and user.water_target is not none) else (user.target_water_intake if (user.target_water_intake is defined and user.target_water_intake is not none) else ''))) | tojson }},
+        "waterIntake": {{ (user.water_intake if (user.water_intake is defined and user.water_intake is not none) else (user.water_today if (user.water_today is defined and user.water_today is not none) else (user.water if (user.water is defined and user.water is not none) else 0))) | tojson }},
+        "xp": {{ (user.scholar_xp if (user.scholar_xp is defined and user.scholar_xp is not none) else (user.xp if (user.xp is defined and user.xp is not none) else 0)) | tojson }},
+        "scholar_xp": {{ (user.scholar_xp if (user.scholar_xp is defined and user.scholar_xp is not none) else (user.xp if (user.xp is defined and user.xp is not none) else 0)) | tojson }},
+        "rank": {{ (user.scholar_rank if (user.scholar_rank is defined and user.scholar_rank is not none) else (user.rank if (user.rank is defined and user.rank is not none) else 'Beginner')) | tojson }},
+        "scholar_rank": {{ (user.scholar_rank if (user.scholar_rank is defined and user.scholar_rank is not none) else (user.rank if (user.rank is defined and user.rank is not none) else 'Beginner')) | tojson }},
+        "streak": {{ (user.active_streak if (user.active_streak is defined and user.active_streak is not none) else (user.scholar_streak if (user.scholar_streak is defined and user.scholar_streak is not none) else (user.streak if (user.streak is defined and user.streak is not none) else 0))) | tojson }},
+        "goalCompletion": {{ (user.goal_completion if (user.goal_completion is defined and user.goal_completion is not none) else (user.goal_pct if (user.goal_pct is defined and user.goal_pct is not none) else 0)) | tojson }},
+        "tasks": {{ (user.tasks if (user.tasks is defined and user.tasks is not none) else (user.goals if (user.goals is defined and user.goals is not none) else [])) | tojson }}
+    }
+    {% else %}
+    {}
+    {% endif %}
+    </script>
+
+    <!-- CLIENT SCRIPT ENGINE -->
+    <script>
+        function getRankFromXP(xp) {
+            const val = Number(xp) || 0;
+            if (val >= 20000) return 'Master+';
+            if (val >= 12000) return 'Master';
+            if (val >= 7000) return 'Elite';
+            if (val >= 3500) return 'Pro+';
+            if (val >= 1500) return 'Pro';
+            if (val >= 500) return 'Intermediate';
+            return 'Beginner';
+        }
+
+        function resolveScholarRank(xp, serverRank) {
+            if (serverRank && typeof serverRank === 'string' && serverRank.trim() !== '' && serverRank.trim() !== 'Unranked') {
+                return serverRank.trim();
+            }
+            return getRankFromXP(xp);
+        }
+
+        let loggedInUser = {};
+        try {
+            const rawUser = document.getElementById('userData')?.textContent;
+            if (rawUser) {
+                loggedInUser = JSON.parse(rawUser);
+            }
+        } catch (e) {
+            console.error("Failed to parse user session context:", e);
+        }
+
+        loggedInUser.xp = Math.max(0, Number(loggedInUser.scholar_xp !== undefined ? loggedInUser.scholar_xp : (loggedInUser.xp || 0)));
+        loggedInUser.scholar_xp = loggedInUser.xp;
+        loggedInUser.rank = resolveScholarRank(loggedInUser.scholar_xp, loggedInUser.scholar_rank || loggedInUser.rank);
+        loggedInUser.scholar_rank = loggedInUser.rank;
+
+        let communityUsers = [];
+        let currentSquad = null;
+
+        function escapeHtml(str) {
+            if (str === null || str === undefined) return '';
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        function formatWater(val) {
+            if (val === null || val === undefined || isNaN(val)) return '0';
+            const num = parseFloat(val);
+            if (isNaN(num)) return '0';
+            return Number(num.toFixed(2)).toString();
+        }
+
+        function isLoggedInUser(u) {
+            if (!u || !loggedInUser || !loggedInUser.id) return false;
+            const uid = String(loggedInUser.id).trim();
+            if (!uid) return false;
+
+            if (u.id && String(u.id).trim() === uid) return true;
+            if (u.user_id && String(u.user_id).trim() === uid) return true;
+            if (u.email && String(u.email).trim().toLowerCase() === uid.toLowerCase()) return true;
+            if (loggedInUser.name && u.name && u.name.trim().toLowerCase() === loggedInUser.name.trim().toLowerCase()) return true;
+
+            return false;
+        }
+
+        function openWidgetModal(id) { 
+            const el = document.getElementById(id);
+            if(el) el.style.display = 'flex'; 
+            if (id === 'squadModal') {
+                loadMySquad();
+            } else if (id === 'leaderboardModal') {
+                loadLeaderboardData();
+            }
+        }
+
+        function closeWidgetModal(id) { 
+            const el = document.getElementById(id);
+            if(el) el.style.display = 'none'; 
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') { 
+                ['pomoModal', 'taskModal', 'waterModal', 'waterCriteriaModal', 'scratchModal', 'leaderboardModal', 'squadModal'].forEach(id => closeWidgetModal(id)); 
+            }
+        });
+
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        if(mobileMenuBtn && mobileMenu) {
+            mobileMenuBtn.addEventListener('click', () => { mobileMenu.classList.toggle('hidden'); });
+        }
+
+        const themeToggleBtn = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+
+        function applyTheme() {
+            if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+                if(themeIcon) themeIcon.className = 'fas fa-sun text-yellow-400';
+            } else {
+                document.documentElement.classList.remove('dark');
+                if(themeIcon) themeIcon.className = 'fas fa-moon text-gray-700';
+            }
+        }
+        applyTheme();
+
+        if(themeToggleBtn) {
+            themeToggleBtn.addEventListener('click', () => {
+                if (document.documentElement.classList.contains('dark')) {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.setItem('theme', 'light');
+                    if(themeIcon) themeIcon.className = 'fas fa-moon text-gray-700';
+                } else {
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('theme', 'dark');
+                    if(themeIcon) themeIcon.className = 'fas fa-sun text-yellow-400';
+                }
+            });
+        }
+
+        const quotes = [
+            "\"Success is the sum of small efforts repeated day in and day out.\"",
+            "\"Don't count the days, make the days count.\"",
+            "\"Focus on being productive instead of busy.\""
+        ];
+        const quoteElem = document.getElementById('quoteDisplay');
+        if(quoteElem) {
+            quoteElem.innerText = quotes[Math.floor(Math.random() * quotes.length)];
+        }
+
+        function getStorageKey(keyName) {
+            const uid = loggedInUser.id || 'guest';
+            return `sp360_${keyName}_${uid}`;
+        }
+
+        function getUserProfileCriteria() {
+            const uid = loggedInUser.id || 'guest';
+            let storedProfile = {};
+            try {
+                const raw = localStorage.getItem(`sp360_profile_${uid}`);
+                if (raw) storedProfile = JSON.parse(raw);
+            } catch (e) {}
+
+            const targetWater = loggedInUser.targetWater || storedProfile.target_water || storedProfile.targetWater || storedProfile.target_water_intake || '';
+
+            return {
+                weight: loggedInUser.weight || storedProfile.weight || '',
+                activityLevel: loggedInUser.activityLevel || storedProfile.activity_level || storedProfile.activityLevel || '',
+                climate: loggedInUser.climate || storedProfile.climate || storedProfile.local_climate || '',
+                targetWater: targetWater
+            };
+        }
+
+        function hasWaterCriteria() {
+            const { weight, activityLevel, climate, targetWater } = getUserProfileCriteria();
+            return Boolean((targetWater && parseFloat(targetWater) > 0) || (weight && activityLevel && climate));
+        }
+
+        function getPersonalizedWaterTarget() {
+            const criteria = getUserProfileCriteria();
+            if (criteria.targetWater && parseFloat(criteria.targetWater) > 0) {
+                return parseFloat(criteria.targetWater);
+            }
+
+            const { weight, activityLevel, climate } = criteria;
+            if (!weight || !activityLevel || !climate) return 0;
+
+            let w = parseFloat(weight);
+            if (isNaN(w) || w <= 0) return 0;
+
+            let target = w * 0.035;
+
+            const act = String(activityLevel).toLowerCase();
+            if (act.includes('athlete')) target += 1.0;
+            else if (act.includes('active')) target += 0.5;
+
+            const clim = String(climate).toLowerCase();
+            if (clim.includes('hot')) target += 0.5;
+
+            return Math.max(1.5, Math.round(target * 100) / 100);
+        }
+
+        function getTodayDateString() {
+            const d = new Date();
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        // INITIAL VALUE LOADERS
+        function getInitialWater() {
+            const key = getStorageKey('water');
+            const stored = localStorage.getItem(key);
+            if (stored !== null && stored !== '' && !isNaN(parseFloat(stored))) {
+                return parseFloat(stored);
+            }
+            if (loggedInUser.waterIntake !== undefined && loggedInUser.waterIntake !== null && !isNaN(parseFloat(loggedInUser.waterIntake))) {
+                const w = parseFloat(loggedInUser.waterIntake);
+                return w > 15 ? w / 1000 : w;
+            }
+            return 0.0;
+        }
+
+        function normalizeTask(t) {
+            if (!t) return null;
+            const text = t.text || t.title || t.name || '';
+            if (!text.trim()) return null;
+            const isDone = Boolean(t.done || t.completed);
+            return {
+                id: t.id || null,
+                text: text.trim(),
+                title: text.trim(),
+                done: isDone,
+                completed: isDone
+            };
+        }
+
+        function getInitialTasks() {
+            const key = getStorageKey('tasks');
+            const stored = localStorage.getItem(key);
+            if (stored !== null) {
+                try {
+                    const parsed = JSON.parse(stored);
+                    if (Array.isArray(parsed)) return parsed.map(normalizeTask).filter(Boolean);
+                } catch (e) {}
+            }
+            if (Array.isArray(loggedInUser.tasks) && loggedInUser.tasks.length > 0) {
+                return loggedInUser.tasks.map(normalizeTask).filter(Boolean);
+            }
+            return [];
+        }
+
+        // POMODORO ENGINE
+        let pomoTime = 1500;
+        let pomoInterval = null;
+        let isRunning = false;
+
+        function updateDisplays() {
+            const mins = Math.floor(pomoTime / 60).toString().padStart(2, '0');
+            const secs = (pomoTime % 60).toString().padStart(2, '0');
+            document.querySelectorAll('.pomoDisplay').forEach(el => el.innerText = `${mins}:${secs}`);
+        }
+
+        function adjustTime(seconds) {
+            if (isRunning) return;
+            pomoTime = Math.max(60, pomoTime + seconds);
+            updateDisplays();
+        }
+
+        function togglePomodoro() {
+            const btn = document.getElementById('pomoStartBtn');
+            if (isRunning) {
+                clearInterval(pomoInterval);
+                if(btn) btn.innerText = 'Resume Session';
+                document.querySelectorAll('.pomoStatus').forEach(el => el.innerText = 'Session paused.');
+                isRunning = false;
+            } else {
+                pomoInterval = setInterval(() => {
+                    if (pomoTime > 0) {
+                        pomoTime--;
+                        updateDisplays();
+                    } else {
+                        clearInterval(pomoInterval);
+                        alert('Focus Session Complete!');
+                        resetPomodoro();
+                    }
+                }, 1000);
+                if(btn) btn.innerText = 'Pause Session';
+                document.querySelectorAll('.pomoStatus').forEach(el => el.innerText = 'Focus mode active! 🎯');
+                isRunning = true;
+            }
+        }
+
+        function resetPomodoro() {
+            clearInterval(pomoInterval);
+            pomoTime = 1500;
+            isRunning = false;
+            updateDisplays();
+            const btn = document.getElementById('pomoStartBtn');
+            if(btn) btn.innerText = 'Start Session';
+            document.querySelectorAll('.pomoStatus').forEach(el => el.innerText = 'Ready to focus?');
+        }
+
+        // WATER TRACKER ENGINE
+        let currentWater = getInitialWater();
+
+        function handleWaterWidgetClick() {
+            if (!hasWaterCriteria()) {
+                openWidgetModal('waterCriteriaModal');
+            } else {
+                openWidgetModal('waterModal');
+            }
+        }
+
+        function renderWater() {
+            const target = getPersonalizedWaterTarget();
+            if (!hasWaterCriteria() || target <= 0) {
+                document.querySelectorAll('.waterVal').forEach(el => el.innerText = 'Criteria Required');
+                document.querySelectorAll('.waterBar').forEach(el => el.style.width = '0%');
+            } else {
+                const formattedCurrent = formatWater(currentWater);
+                const formattedTarget = formatWater(target);
+
+                document.querySelectorAll('.waterVal').forEach(el => el.innerText = `${formattedCurrent} / ${formattedTarget} L`);
+                const pct = Math.min(100, Math.max(0, (currentWater / target) * 100));
+                document.querySelectorAll('.waterBar').forEach(el => el.style.width = `${pct}%`);
+            }
+            
+            updateDashboardMetricsDisplay();
+        }
+
+        async function addWater(amount) {
+            if (!hasWaterCriteria()) {
+                closeWidgetModal('waterModal');
+                openWidgetModal('waterCriteriaModal');
+                return;
+            }
+
+            const target = getPersonalizedWaterTarget();
+            if (target <= 0) return;
+
+            let nextWater = Math.round((currentWater + amount) * 100) / 100;
+            if (nextWater > target) nextWater = target;
+            if (nextWater < 0) nextWater = 0;
+
+            const diffL = Math.round((nextWater - currentWater) * 100) / 100;
+            currentWater = nextWater;
+            localStorage.setItem(getStorageKey('water'), currentWater);
+            renderWater();
+
+            if (!loggedInUser.id) return;
+
+            const amountMl = Math.round(diffL * 1000);
+            try {
+                const res = await fetch('/api/water', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ amount_ml: amountMl, date: getTodayDateString() })
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.amount_ml !== undefined) {
+                        currentWater = Math.round((data.amount_ml / 1000) * 100) / 100;
+                        localStorage.setItem(getStorageKey('water'), currentWater);
+                        renderWater();
+                    }
+                    updateMetricsFromResponse(data);
+                }
+            } catch(e) {
+                console.warn("Water sync error:", e);
+            }
+        }
+
+        // TARGET MANAGER
+        let tasks = getInitialTasks();
+
+        function calculateGoalPercentage() {
+            let totalScore = 0;
+            let categories = 0;
+
+            if (Array.isArray(tasks) && tasks.length > 0) {
+                const completed = tasks.filter(t => t && (t.done || t.completed)).length;
+                totalScore += (completed / tasks.length) * 100;
+                categories++;
+            }
+
+            const waterTarget = getPersonalizedWaterTarget();
+            if (hasWaterCriteria() && waterTarget > 0) {
+                const waterPct = Math.min(100, Math.max(0, (currentWater / waterTarget) * 100));
+                totalScore += waterPct;
+                categories++;
+            }
+
+            if (categories === 0) return 0;
+            const res = Math.min(100, Math.max(0, Math.round(totalScore / categories)));
+            return isNaN(res) ? 0 : res;
+        }
+
+        // AURA TIERS
+        function getAuraTag(pct) {
+            const score = Number(pct) || 0;
+            if (score >= 80) {
+                return { 
+                    type: 'PLUS_AURA',
+                    label: '+999 Aura 👑', 
+                    class: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300 border border-emerald-300' 
+                };
+            } else if (score >= 50) {
+                return { 
+                    type: 'CHAD',
+                    label: 'Chad ⚡', 
+                    class: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300 border border-indigo-300' 
+                };
+            } else {
+                return { 
+                    type: 'MINUS_AURA',
+                    label: '-999 Aura 🔴', 
+                    class: 'bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300 border border-red-300' 
+                };
+            }
+        }
+
+        function getUserGoalPct(user) {
+            if (!user) return 0;
+            if (isLoggedInUser(user)) {
+                return calculateGoalPercentage();
+            }
+            if (user.completion_rate !== undefined && user.completion_rate !== null && !isNaN(parseFloat(user.completion_rate))) {
+                return parseFloat(user.completion_rate);
+            }
+            if (user.goals_completion_pct !== undefined && user.goals_completion_pct !== null && !isNaN(parseFloat(user.goals_completion_pct))) {
+                return parseFloat(user.goals_completion_pct);
+            }
+            if (user.completion_pct !== undefined && user.completion_pct !== null && !isNaN(parseFloat(user.completion_pct))) {
+                return parseFloat(user.completion_pct);
+            }
+            if (user.goal_completion !== undefined && user.goal_completion !== null && !isNaN(parseFloat(user.goal_completion))) {
+                return parseFloat(user.goal_completion);
+            }
+            if (user.goal_score !== undefined && user.goal_score !== null && !isNaN(parseFloat(user.goal_score))) {
+                return parseFloat(user.goal_score);
+            }
+            if (user.score !== undefined && user.score !== null && !isNaN(parseFloat(user.score))) {
+                return parseFloat(user.score);
+            }
+            if (user.goalPct !== undefined && user.goalPct !== null && !isNaN(parseFloat(user.goalPct))) {
+                return parseFloat(user.goalPct);
+            }
+            if (user.goal_pct !== undefined && user.goal_pct !== null && !isNaN(parseFloat(user.goal_pct))) {
+                return parseFloat(user.goal_pct);
+            }
+            return 0;
+        }
+
+        function getAuraVal(user) {
+            if (!user) return -999;
+            if (user.aura !== undefined && user.aura !== null && user.aura !== '' && !isNaN(parseFloat(user.aura))) {
+                return parseFloat(user.aura);
+            }
+            if (user.score !== undefined && user.score !== null && user.score !== '' && !isNaN(parseFloat(user.score))) {
+                return parseFloat(user.score);
+            }
+            const pct = getUserGoalPct(user);
+            if (pct >= 80) return 999;
+            if (pct >= 50) return Math.round((pct / 100) * 1000);
+            return -999;
+        }
+
+        function formatAuraDisplay(auraVal) {
+            const val = Number(auraVal);
+            if (isNaN(val) || val <= -999) return '-999 Aura';
+            if (val > 0) return `+${val} Aura`;
+            return `${val} Aura`;
+        }
+
+        function updateMetricsFromResponse(data) {
+            if (!data) return;
+            if (data.xp !== undefined && !isNaN(parseFloat(data.xp))) {
+                const parsedXp = Math.max(0, parseFloat(data.xp));
+                loggedInUser.xp = parsedXp;
+                loggedInUser.scholar_xp = parsedXp;
+            }
+            if (data.scholar_rank || data.rank) {
+                loggedInUser.scholar_rank = resolveScholarRank(loggedInUser.scholar_xp, data.scholar_rank || data.rank);
+                loggedInUser.rank = loggedInUser.scholar_rank;
+            }
+            if (data.streak !== undefined) {
+                loggedInUser.streak = Number(data.streak);
+            }
+            updateDashboardMetricsDisplay();
+        }
+
+        function updateDashboardMetricsDisplay() {
+            const goalPct = calculateGoalPercentage();
+            const tagInfo = getAuraTag(goalPct);
+
+            const calculatedLiveXp = Math.max(Number(loggedInUser.scholar_xp) || 0, Math.round(goalPct * 10));
+            loggedInUser.xp = calculatedLiveXp;
+            loggedInUser.scholar_xp = calculatedLiveXp;
+
+            const heroTag = document.getElementById('userHeroTag');
+            if (heroTag) {
+                heroTag.innerHTML = `<span class="px-2 py-0.5 rounded-full text-[11px] font-bold inline-block leading-tight ${tagInfo.class}">${tagInfo.label}</span>`;
+            }
+
+            const heroGoals = document.getElementById('userHeroGoals');
+            if (heroGoals) {
+                heroGoals.innerText = `${goalPct}%`;
+            }
+
+            const heroXP = document.getElementById('userHeroXP');
+            if (heroXP) {
+                heroXP.innerText = `${calculatedLiveXp.toLocaleString()} XP`;
+            }
+
+            const heroRank = document.getElementById('userHeroRank');
+            if (heroRank) {
+                const r = resolveScholarRank(calculatedLiveXp, loggedInUser.scholar_rank || loggedInUser.rank);
+                loggedInUser.scholar_rank = r;
+                loggedInUser.rank = r;
+                heroRank.innerText = r;
+            }
+
+            const heroStreak = document.getElementById('userHeroStreak');
+            if (heroStreak) {
+                const streakVal = Number(loggedInUser.streak) || 0;
+                heroStreak.innerText = `${streakVal} ${streakVal === 1 ? 'Day' : 'Days'}`;
+            }
+
+            const heroWater = document.getElementById('userHeroWater');
+            if (heroWater) {
+                const target = getPersonalizedWaterTarget();
+                if (!hasWaterCriteria() || target <= 0) {
+                    heroWater.innerText = 'Set Criteria';
+                } else {
+                    heroWater.innerText = `${formatWater(currentWater)} / ${formatWater(target)} L`;
+                }
+            }
+        }
+
+        function renderTasks() {
+            const ul = document.getElementById('taskList');
+            if(!ul) return;
+            ul.innerHTML = '';
+            
+            tasks = tasks.map(normalizeTask).filter(Boolean);
+
+            if (tasks.length === 0) {
+                ul.innerHTML = '<li class="text-center py-8 text-gray-400 text-sm font-semibold">No targets added for today. Click + to add your first goal!</li>';
+            } else {
+                tasks.forEach((task, index) => {
+                    const isDone = Boolean(task.done || task.completed);
+                    const li = document.createElement('li');
+                    li.className = 'flex items-center justify-between bg-gray-50 dark:bg-gray-700/50 p-4 rounded-xl border border-gray-200/60 dark:border-gray-700 transition';
+                    li.innerHTML = `
+                        <div class="flex items-center gap-4 flex-1">
+                            <input type="checkbox" ${isDone ? 'checked' : ''} onchange="toggleTask(${index})" class="w-5 h-5 rounded text-emerald-600 focus:ring-emerald-500 cursor-pointer">
+                            <span class="text-base transition-all ${isDone ? 'line-through text-gray-400 dark:text-gray-500 font-medium' : 'text-gray-800 dark:text-gray-100 font-semibold'}">${escapeHtml(task.text)}</span>
+                        </div>
+                        <button onclick="deleteTask(${index})" class="text-gray-400 hover:text-red-500 p-2 cursor-pointer transition" title="Delete Task"><i class="fas fa-trash-alt"></i></button>
+                    `;
+                    ul.appendChild(li);
+                });
+            }
+            
+            const doneCount = tasks.filter(t => t && (t.done || t.completed)).length;
+            const totalCount = tasks.length;
+            document.querySelectorAll('.taskCount').forEach(el => el.innerText = `${doneCount}/${totalCount} done`);
+            
+            updateDashboardMetricsDisplay();
+        }
+
+        async function fetchTasksFromServer() {
+            if (!loggedInUser.id) return;
+            try {
+                const res = await fetch(`/api/targets?date=${getTodayDateString()}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.tasks && Array.isArray(data.tasks)) {
+                        tasks = data.tasks.map(normalizeTask).filter(Boolean);
+                        localStorage.setItem(getStorageKey('tasks'), JSON.stringify(tasks));
+                        renderTasks();
+                    }
+                    if (data.score !== undefined) {
+                        updateMetricsFromResponse(data);
+                    }
+                }
+            } catch(e) {
+                console.warn("Tasks fetch error:", e);
+            }
+        }
+
+        async function addTask(event) {
+            if (event) event.preventDefault();
+            const input = document.getElementById('taskInput');
+            if(!input || !input.value.trim()) return;
+            
+            const taskTitle = input.value.trim();
+            const tempId = 'temp_' + Date.now();
+            const newTask = { id: tempId, text: taskTitle, title: taskTitle, done: false, completed: false };
+            tasks.push(newTask);
+            
+            localStorage.setItem(getStorageKey('tasks'), JSON.stringify(tasks));
+            input.value = '';
+            renderTasks();
+
+            if (!loggedInUser.id) return;
+
+            try {
+                const res = await fetch('/api/targets', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title: taskTitle, date: getTodayDateString() })
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.task && data.task.id) {
+                        const idx = tasks.findIndex(t => t.id === tempId);
+                        if (idx !== -1) {
+                            tasks[idx].id = data.task.id;
+                            localStorage.setItem(getStorageKey('tasks'), JSON.stringify(tasks));
+                        }
+                    }
+                    updateMetricsFromResponse(data);
+                }
+            } catch(e) {
+                console.warn("Add task error:", e);
+            }
+        }
+
+        async function toggleTask(index) {
+            if (!tasks[index]) return;
+            
+            const nextState = !(tasks[index].done || tasks[index].completed);
+            tasks[index].done = nextState;
+            tasks[index].completed = nextState;
+            
+            localStorage.setItem(getStorageKey('tasks'), JSON.stringify(tasks));
+            renderTasks();
+
+            if (!loggedInUser.id) return;
+
+            const taskId = tasks[index].id;
+            if (taskId && !String(taskId).startsWith('temp_')) {
+                try {
+                    const res = await fetch('/api/targets', {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ task_id: taskId, completed: nextState, date: getTodayDateString() })
+                    });
+                    if (res.ok) {
+                        const data = await res.json();
+                        updateMetricsFromResponse(data);
+                    }
+                } catch(e) {
+                    console.warn("Toggle task error:", e);
+                }
+            }
+        }
+
+        async function deleteTask(index) {
+            if (tasks[index] === undefined) return;
+            
+            const deleted = tasks.splice(index, 1)[0];
+            localStorage.setItem(getStorageKey('tasks'), JSON.stringify(tasks));
+            renderTasks();
+
+            if (!loggedInUser.id) return;
+
+            const taskId = deleted ? deleted.id : null;
+            if (taskId && !String(taskId).startsWith('temp_')) {
+                try {
+                    const res = await fetch(`/api/targets?task_id=${taskId}&date=${getTodayDateString()}`, {
+                        method: 'DELETE'
+                    });
+                    if (res.ok) {
+                        const data = await res.json();
+                        updateMetricsFromResponse(data);
+                    }
+                } catch(e) {
+                    console.warn("Delete task error:", e);
+                }
+            }
+        }
+
+        // SCRATCHPAD ENGINE
+        const scratchpad = document.getElementById('scratchpad');
+
+        async function fetchScratchpadFromServer() {
+            if (!loggedInUser.id) return;
+            try {
+                const res = await fetch('/api/scratchpad');
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.content !== undefined && scratchpad) {
+                        scratchpad.value = data.content;
+                        localStorage.setItem(getStorageKey('scratchpad'), data.content);
+                    }
+                }
+            } catch(e) {}
+        }
+
+        if(scratchpad) {
+            scratchpad.value = localStorage.getItem(getStorageKey('scratchpad')) || '';
+        }
+
+        let scratchDebounceTimer = null;
+        function saveScratchpadDebounced() {
+            if(!scratchpad) return;
+            localStorage.setItem(getStorageKey('scratchpad'), scratchpad.value);
+            
+            if (!loggedInUser.id) return;
+
+            if (scratchDebounceTimer) clearTimeout(scratchDebounceTimer);
+            scratchDebounceTimer = setTimeout(async () => {
+                try {
+                    await fetch('/api/scratchpad', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ content: scratchpad.value })
+                    });
+                } catch(e) {}
+            }, 800);
+        }
+
+        function clearScratchpad() {
+            if(!scratchpad) return;
+            scratchpad.value = '';
+            localStorage.removeItem(getStorageKey('scratchpad'));
+            if (loggedInUser.id) {
+                fetch('/api/scratchpad', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ content: '' })
+                }).catch(() => {});
+            }
+        }
+
+        // COMMUNITY & LEADERBOARD
+        async function loadLeaderboardData() {
+            try {
+                const response = await fetch('/api/leaderboard');
+                if (response.ok) {
+                    const data = await response.json();
+                    let rawList = [];
+                    if (Array.isArray(data)) rawList = data;
+                    else if (data && Array.isArray(data.leaderboard)) rawList = data.leaderboard;
+                    else if (data && Array.isArray(data.users)) rawList = data.users;
+
+                    if (rawList.length > 0) {
+                        const userMap = new Map();
+                        rawList.forEach(u => {
+                            const key = String(u.id || u.user_id || u.email || u.name || u.username).trim();
+                            if (key) {
+                                const xpVal = Number(u.scholar_xp !== undefined ? u.scholar_xp : (u.xp || 0));
+                                const rankVal = resolveScholarRank(xpVal, u.scholar_rank || u.rank);
+                                userMap.set(key, { 
+                                    ...u,
+                                    name: u.name || u.username || u.full_name || 'Anonymous Scholar',
+                                    username: u.username || '',
+                                    avatar: u.profile_photo || u.avatar_url || u.avatar || u.photo || '',
+                                    state: u.state || u.region || u.user_state || 'N/A',
+                                    scholar_xp: xpVal,
+                                    xp: xpVal,
+                                    scholar_rank: rankVal,
+                                    rank: rankVal
+                                });
+                            }
+                        });
+                        communityUsers = Array.from(userMap.values());
+                    }
+                }
+            } catch (e) {
+                console.warn("Failed to fetch leaderboard data:", e);
+            }
+            updateUserMetricsInCommunity();
+        }
+
+        function updateUserMetricsInCommunity() {
+            const goalPct = calculateGoalPercentage();
+
+            if (loggedInUser.id) {
+                const existingIndex = communityUsers.findIndex(isLoggedInUser);
+                const userStateFromProfile = loggedInUser.state || localStorage.getItem(getStorageKey('user_state')) || 'Uttarakhand';
+                const userAura = getAuraVal({ goal_completion: goalPct });
+
+                if (existingIndex >= 0) {
+                    communityUsers[existingIndex].goal_completion = goalPct;
+                    communityUsers[existingIndex].water_intake = currentWater;
+                    communityUsers[existingIndex].aura = userAura;
+                    communityUsers[existingIndex].name = loggedInUser.name || communityUsers[existingIndex].name || 'You';
+                    communityUsers[existingIndex].state = userStateFromProfile;
+                    communityUsers[existingIndex].xp = loggedInUser.scholar_xp || loggedInUser.xp || communityUsers[existingIndex].xp || 0;
+                    communityUsers[existingIndex].scholar_xp = communityUsers[existingIndex].xp;
+                    communityUsers[existingIndex].scholar_rank = resolveScholarRank(communityUsers[existingIndex].xp, loggedInUser.scholar_rank || loggedInUser.rank || communityUsers[existingIndex].scholar_rank);
+                    communityUsers[existingIndex].rank = communityUsers[existingIndex].scholar_rank;
+                } else {
+                    const currentXP = loggedInUser.scholar_xp || loggedInUser.xp || 0;
+                    communityUsers.push({
+                        id: loggedInUser.id,
+                        user_id: loggedInUser.id,
+                        name: loggedInUser.name || 'You',
+                        state: userStateFromProfile,
+                        country: 'India',
+                        flag: '🇮🇳',
+                        aura: userAura,
+                        xp: currentXP,
+                        scholar_xp: currentXP,
+                        scholar_rank: resolveScholarRank(currentXP, loggedInUser.scholar_rank || loggedInUser.rank),
+                        rank: resolveScholarRank(currentXP, loggedInUser.scholar_rank || loggedInUser.rank),
+                        avatar: loggedInUser.name ? `https://ui-avatars.com/api/?name=${encodeURIComponent(loggedInUser.name)}&background=6366f1&color=fff` : 'https://ui-avatars.com/api/?name=User&background=6366f1&color=fff',
+                        water_intake: currentWater,
+                        goal_completion: goalPct
+                    });
+                }
+            }
+
+            renderLeaderboard();
+            renderSquadLeaderboard();
+        }
+
+        function renderLeaderboard() {
+            const listContainer = document.getElementById('leaderboardList');
+            if(!listContainer) return;
+
+            const selectedState = document.getElementById('stateFilterSelect') ? document.getElementById('stateFilterSelect').value : 'ALL';
+            const selectedTag = document.getElementById('tagFilterSelect') ? document.getElementById('tagFilterSelect').value : 'ALL';
+
+            let filteredUsers = [...communityUsers];
+
+            if (selectedState !== 'ALL') {
+                filteredUsers = filteredUsers.filter(u => {
+                    const st = (u.state || u.region || u.user_state || '').trim().toLowerCase();
+                    return st === selectedState.trim().toLowerCase();
+                });
+            }
+
+            if (selectedTag !== 'ALL') {
+                filteredUsers = filteredUsers.filter(u => {
+                    const pct = getUserGoalPct(u);
+                    const tagObj = getAuraTag(pct);
+                    return tagObj.type === selectedTag;
+                });
+            }
+
+            let sorted = filteredUsers.sort((a, b) => {
+                const auraA = getAuraVal(a);
+                const auraB = getAuraVal(b);
+                if (auraB !== auraA) return auraB - auraA;
+                const pctA = getUserGoalPct(a);
+                const pctB = getUserGoalPct(b);
+                if (pctB !== pctA) return pctB - pctA;
+                const xpA = Number(a.xp || a.scholar_xp || 0);
+                const xpB = Number(b.xp || b.scholar_xp || 0);
+                return xpB - xpA;
+            });
+
+            if (sorted.length === 0) {
+                listContainer.innerHTML = `<div class="text-center py-12 text-gray-400 text-sm font-semibold">No registered users found matching the selected filters.</div>`;
+                return;
+            }
+
+            let listHtml = '';
+            sorted.forEach((user, index) => {
+                const name = user.name || user.username || user.full_name || 'User';
+                const usernameStr = user.username ? `@${user.username}` : '';
+                const stateStr = user.state || user.region || user.user_state || 'N/A';
+                const auraVal = getAuraVal(user);
+                const auraText = formatAuraDisplay(auraVal);
+                const pct = getUserGoalPct(user);
+                const tag = getAuraTag(pct);
+                const xpVal = Number(user.scholar_xp !== undefined ? user.scholar_xp : (user.xp || 0));
+                const userRank = resolveScholarRank(xpVal, user.scholar_rank || user.rank);
+                const avatarUrl = user.profile_photo || user.avatar_url || user.avatar || user.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=6366f1&color=fff`;
+                const isYou = isLoggedInUser(user);
+
+                listHtml += `
+                    <div ${isYou ? 'id="leaderboard-row-me"' : ''} class="flex items-center justify-between py-3 px-3 rounded-xl transition ${isYou ? 'bg-indigo-50/90 dark:bg-indigo-950/60 border-2 border-indigo-500 dark:border-indigo-400 font-semibold shadow-sm' : 'hover:bg-gray-50 dark:hover:bg-gray-700/50 border border-transparent'}">
+                        <div class="flex items-center gap-3">
+                            <span class="w-6 text-center font-black text-sm ${index === 0 ? 'text-yellow-500 text-lg' : index === 1 ? 'text-gray-400 text-lg' : index === 2 ? 'text-amber-600 text-lg' : 'text-gray-500'}">#${index + 1}</span>
+                            <img src="${avatarUrl}" alt="${escapeHtml(name)}" class="w-10 h-10 rounded-xl object-cover shadow-sm">
+                            <div>
+                                <h5 class="font-bold text-sm text-gray-900 dark:text-white flex items-center gap-1.5">
+                                    ${escapeHtml(name)} ${usernameStr ? `<span class="text-xs text-indigo-500 dark:text-indigo-400 font-normal">${escapeHtml(usernameStr)}</span>` : ''} ${isYou ? '<span class="text-xs bg-indigo-600 text-white px-2 py-0.5 rounded-full font-bold ml-1">(You)</span>' : ''}
+                                </h5>
+                                <span class="text-[11px] text-gray-500 dark:text-gray-400">${escapeHtml(stateStr)} • ${auraText} • <strong class="text-indigo-600 dark:text-indigo-300">${xpVal.toLocaleString()} XP (${escapeHtml(userRank)})</strong></span>
+                            </div>
+                        </div>
+                        <span class="px-3 py-1 rounded-full text-xs font-bold ${tag.class}">${tag.label}</span>
+                    </div>
+                `;
+            });
+
+            listContainer.innerHTML = listHtml;
+            updateDashboardMetricsDisplay();
+        }
+
+        function scrollToMyPosition() {
+            if (!loggedInUser.id) {
+                alert("Please log in to locate your ranking position.");
+                return;
+            }
+            
+            let myRow = document.getElementById('leaderboard-row-me');
+            if (!myRow) {
+                const stateSel = document.getElementById('stateFilterSelect');
+                const tagSel = document.getElementById('tagFilterSelect');
+                if (stateSel) stateSel.value = 'ALL';
+                if (tagSel) tagSel.value = 'ALL';
+                renderLeaderboard();
+                myRow = document.getElementById('leaderboard-row-me');
+            }
+
+            if (myRow) {
+                myRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                myRow.classList.add('ring-4', 'ring-yellow-400', 'transition-all', 'duration-300');
+                setTimeout(() => {
+                    myRow.classList.remove('ring-4', 'ring-yellow-400');
+                }, 3000);
+            } else {
+                alert("Unable to locate your position on the leaderboard.");
+            }
+        }
+
+        // PRIVATE SQUAD ENGINE & SYNC
+        async function loadMySquad() {
+            if (!loggedInUser.id) {
+                currentSquad = null;
+                renderSquadLeaderboard();
+                return;
+            }
+            try {
+                const response = await fetch('/api/squad/my-squad');
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.has_squad && data.squad) {
+                        currentSquad = data.squad;
+                        localStorage.setItem(getStorageKey('my_squad'), JSON.stringify(currentSquad));
+                    } else {
+                        currentSquad = null;
+                        localStorage.removeItem(getStorageKey('my_squad'));
+                    }
+                } else {
+                    currentSquad = null;
+                }
+            } catch(e) {
+                console.warn("Squad fetch error:", e);
+            }
+            renderSquadLeaderboard();
+        }
+
+        async function generateSquadCode() {
+            if (!loggedInUser.id) {
+                alert("Please log in to create a Private Squad.");
+                return;
+            }
+            try {
+                const response = await fetch('/api/squad/create', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    if (data.has_squad && data.squad) {
+                        currentSquad = data.squad;
+                        localStorage.setItem(getStorageKey('my_squad'), JSON.stringify(currentSquad));
+                        renderSquadLeaderboard();
+                        return;
+                    }
+                }
+                alert(data.error || "Failed to create squad room.");
+            } catch(e) {
+                alert("Network error while creating squad room.");
+            }
+        }
+
+        function copySquadCode() {
+            const code = document.getElementById('squadCodeText')?.innerText;
+            if (code && code !== '---') {
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(code).then(showCopiedMsg).catch(() => fallbackCopy(code));
+                } else {
+                    fallbackCopy(code);
+                }
+            }
+        }
+
+        function showCopiedMsg() {
+            const txt = document.getElementById('copyBtnText');
+            if (txt) {
+                txt.innerText = 'Copied!';
+                setTimeout(() => { txt.innerText = 'Copy'; }, 2000);
+            }
+        }
+
+        function fallbackCopy(text) {
+            const input = document.createElement('textarea');
+            input.value = text;
+            document.body.appendChild(input);
+            input.select();
+            try {
+                document.execCommand('copy');
+                showCopiedMsg();
+            } catch (err) {}
+            document.body.removeChild(input);
+        }
+
+        async function joinSquad() {
+            if (!loggedInUser.id) {
+                alert("Please log in to join a Private Squad.");
+                return;
+            }
+            const input = document.getElementById('joinCodeInput');
+            const codeInput = input ? input.value.trim().toUpperCase() : '';
+            if(!codeInput) {
+                alert('Please enter a valid squad code!');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/squad/join', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code: codeInput, squad_code: codeInput })
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    if (data.has_squad && data.squad) {
+                        currentSquad = data.squad;
+                        localStorage.setItem(getStorageKey('my_squad'), JSON.stringify(currentSquad));
+                        if (input) input.value = '';
+                        renderSquadLeaderboard();
+                        return;
+                    }
+                }
+                alert(data.error || "Could not join squad.");
+            } catch (e) {
+                alert("Error joining squad room.");
+            }
+        }
+
+        async function leaveSquad() {
+            if (!currentSquad) return;
+            if (!confirm("Are you sure you want to leave this squad room?")) return;
+
+            try {
+                await fetch('/api/squad/leave', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+            } catch(e) {}
+
+            currentSquad = null;
+            localStorage.removeItem(getStorageKey('my_squad'));
+            renderSquadLeaderboard();
+        }
+
+        function renderSquadLeaderboard() {
+            const listContainer = document.getElementById('squadLeaderboardList');
+            const squadNameEl = document.getElementById('activeSquadName');
+            const codeBox = document.getElementById('generatedCodeBox');
+            const codeText = document.getElementById('squadCodeText');
+            const leaveBtn = document.getElementById('leaveSquadBtn');
+
+            if (!listContainer) return;
+
+            if (!currentSquad || (!currentSquad.code && !currentSquad.squad_code)) {
+                if (squadNameEl) squadNameEl.innerText = 'No Active Squad';
+                if (codeBox) codeBox.classList.add('hidden');
+                if (leaveBtn) leaveBtn.classList.add('hidden');
+                listContainer.innerHTML = `<div class="text-center py-6 text-gray-400 text-xs font-semibold">You are not currently in a squad room. Create or join one above!</div>`;
+                return;
+            }
+
+            const code = currentSquad.code || currentSquad.squad_code || '---';
+            const sName = currentSquad.name || `Squad (${code})`;
+            if (squadNameEl) squadNameEl.innerText = `${sName} (Code: ${code})`;
+            if (codeText) codeText.innerText = code;
+            if (codeBox) codeBox.classList.remove('hidden');
+            if (leaveBtn) leaveBtn.classList.remove('hidden');
+
+            let rawMembers = currentSquad.members || currentSquad.users || [];
+            let members = rawMembers.map(m => {
+                let userPct = isLoggedInUser(m) ? calculateGoalPercentage() : getUserGoalPct(m);
+                return { ...m, computed_pct: userPct };
+            });
+
+            if (loggedInUser.id && !members.some(m => isLoggedInUser(m))) {
+                members.push({
+                    id: loggedInUser.id,
+                    user_id: loggedInUser.id,
+                    name: loggedInUser.name || 'You',
+                    username: loggedInUser.username || '',
+                    avatar: loggedInUser.avatar || loggedInUser.avatar_url || '',
+                    computed_pct: calculateGoalPercentage(),
+                    scholar_xp: loggedInUser.scholar_xp || loggedInUser.xp || 0
+                });
+            }
+
+            members.sort((a, b) => b.computed_pct - a.computed_pct);
+
+            let rowsHtml = '';
+            members.forEach((member, idx) => {
+                const name = member.name || member.username || member.full_name || 'Squad Member';
+                const usernameStr = member.username ? `@${member.username}` : '';
+                const pct = Math.min(100, Math.max(0, Math.round(Number(member.computed_pct) || 0)));
+                const tag = getAuraTag(pct);
+                const isYou = isLoggedInUser(member);
+                const avatarUrl = member.avatar || member.avatar_url || member.profile_photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=6366f1&color=fff`;
+
+                rowsHtml += `
+                    <div class="flex items-center justify-between py-2.5 px-3 rounded-xl ${isYou ? 'bg-purple-100/70 dark:bg-purple-900/40 border border-purple-300 font-semibold' : 'hover:bg-gray-100 dark:hover:bg-gray-800'}">
+                        <div class="flex items-center gap-3">
+                            <span class="w-5 text-center font-bold text-xs text-purple-600 dark:text-purple-400">#${idx + 1}</span>
+                            <img src="${avatarUrl}" alt="${escapeHtml(name)}" class="w-8 h-8 rounded-lg object-cover shadow-sm">
+                            <div>
+                                <div class="text-xs font-bold text-gray-800 dark:text-gray-100 flex items-center gap-1">
+                                    ${escapeHtml(name)} ${usernameStr ? `<span class="text-[10px] text-gray-400 font-normal">${escapeHtml(usernameStr)}</span>` : ''} ${isYou ? '<span class="text-[10px] bg-purple-600 text-white px-1.5 py-0.2 rounded-full font-bold ml-1">(You)</span>' : ''}
+                                </div>
+                                <div class="text-[10px] text-gray-400 font-medium">Completion Rate: ${pct}%</div>
+                            </div>
+                        </div>
+                        <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold ${tag.class}">${tag.label}</span>
+                    </div>
+                `;
+            });
+
+            listContainer.innerHTML = rowsHtml;
+        }
+
+        // INITIALIZATION
+        window.addEventListener('DOMContentLoaded', () => {
+            renderWater();
+            renderTasks();
+            updateDashboardMetricsDisplay();
+            fetchTasksFromServer();
+            fetchScratchpadFromServer();
+            loadLeaderboardData();
+            loadMySquad();
+
+            // Background polling only when modals are open
+            setInterval(() => {
+                if (document.getElementById('squadModal')?.style.display === 'flex') {
+                    loadMySquad();
+                }
+                if (document.getElementById('leaderboardModal')?.style.display === 'flex') {
+                    loadLeaderboardData();
+                }
+            }, 12000);
+        });
+    </script>
+</body>
+</html>

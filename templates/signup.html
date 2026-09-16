@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ScholarPulse360 - Create Account</title>
+    
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- FontAwesome Icon Library -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Theme Toggle JS -->
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+</head>
+<body>
+
+    <!-- Top Right Theme Toggle Button -->
+    <div class="auth-theme-wrapper">
+        <button id="theme-toggle" class="theme-toggle-btn" title="Toggle Theme">
+            <i class="fa-solid fa-moon" id="theme-icon"></i>
+        </button>
+    </div>
+
+    <!-- Main Signup Card -->
+    <div class="auth-card">
+        <div class="logo-wrapper">
+            <a href="/">
+                <img src="{{ url_for('static', filename='logo.png') }}" alt="ScholarPulse360 Logo" class="brand-logo-large">
+            </a>
+        </div>
+
+        <h2>Create Account</h2>
+        <p class="subtitle">Join ScholarPulse360 & level up your academic journey!</p>
+
+        {% if error %}
+        <div class="error-banner">
+            <i class="fa-solid fa-circle-exclamation"></i> {{ error }}
+        </div>
+        {% endif %}
+
+        <form action="/signup" method="POST">
+            <div class="input-group">
+                <label for="name">Full Name</label>
+                <input type="text" id="name" name="name" placeholder="Enter your full name" required>
+            </div>
+
+            <div class="input-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" placeholder="Choose a username" required>
+            </div>
+
+            <div class="input-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" placeholder="name@example.com" required>
+            </div>
+
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Create a strong password" required>
+            </div>
+
+            <button type="submit" class="btn-submit">
+                <span>Sign Up</span>
+                <i class="fa-solid fa-arrow-right"></i>
+            </button>
+        </form>
+
+        <p class="auth-footer-text">
+            Already have an account? <a href="/login" class="link-highlight">Log In</a>
+        </p>
+    </div>
+
+</body>
+</html>
