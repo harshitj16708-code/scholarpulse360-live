@@ -823,6 +823,12 @@ def compute_goal_score_and_aura(user_id, target_date_str=None, update_db=True):
 def favicon():
     return send_from_directory(app.static_folder, 'favicon.png', mimetype='image/png')
 
+@app.route('/new-feature')
+def new_feature_page():
+    if not session.get('user_id'):
+        return redirect(url_for('login_page'))
+    return render_template('new_feature.html')
+
 @app.route('/', endpoint='index')
 @app.route('/dashboard', endpoint='dashboard')
 def dashboard():
@@ -930,7 +936,7 @@ def signup_page():
                 "streak": 0,
                 "scholar_rank": "Beginner"
             }
-            supabase.table('users').insert(profile_data).execute()
+            supabase.table('users').upsert(profile_data).execute()
 
             supabase.table('user_stats').upsert({
                 "user_id": user_id,
