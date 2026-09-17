@@ -828,7 +828,10 @@ def new_feature_page():
     if not session.get('user_id'):
         return redirect(url_for('login_page'))
     return render_template('new_feature.html')
-
+@app.route('/creator')
+@app.route('/creators')
+def creator():
+    return render_template('creator.html')
 @app.route('/', endpoint='index')
 @app.route('/dashboard', endpoint='dashboard')
 def dashboard():
